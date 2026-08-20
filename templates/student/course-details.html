@@ -1,0 +1,160 @@
+{% extends 'student/student_base.html' %} 
+{% load static %}
+
+{% block title %}{{ course.title }} | EduVerse{% endblock %}
+
+{% block content %}
+    <style>
+        #learningOutcomes li, #requirements li { margin-bottom: 0.75rem; }
+    </style>
+
+    <!-- Course Header -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 p-2 mt-4 mt-lg-0">
+        <div class="row g-0 align-items-center">
+            <div class="col-md-4 col-lg-3 d-flex align-items-center justify-content-center p-2">
+                {% if course.image %}
+                    <img src="{{ course.image.url }}" class="img-fluid rounded-4 shadow-sm" alt="{{ course.title }}" style="object-fit: cover; width: 100%; height: 160px;">
+                {% else %}
+                    <div class="bg-secondary bg-opacity-10 rounded-4 d-flex align-items-center justify-content-center" style="width: 100%; height: 160px;">
+                        <i class="bi bi-image fs-1 text-muted"></i>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="col-md-8 col-lg-9">
+                <div class="card-body p-2 p-md-3">
+                    <span class="badge bg-primary-subtle text-primary-emphasis border border-primary-subtle rounded-pill px-2 py-1 fw-semibold mb-2" style="font-size: 0.7rem;">
+                        {{ course.get_category_display|default:course.category }}
+                    </span>
+    
+                    <h3 class="fw-bolder text-dark mb-2 fs-5">
+                        {{ course.title }}
+                    </h3>
+    
+                    <p class="text-secondary fw-medium mb-3" style="font-size: 0.85rem;">
+                        {{ course.description|truncatewords:25 }}
+                    </p>
+                    
+                    <div class="course-info mb-3 d-flex flex-wrap gap-3 border-top border-bottom py-2">
+                        <p class="mb-0 text-secondary" style="font-size: 0.8rem;">
+                            <i class="bi bi-person-fill me-1 text-primary"></i><strong>Instructor:</strong>
+                            <span class="text-dark fw-semibold ms-1">{{ course.instructor.first_name|default:course.instructor.username }}</span>
+                        </p>
+    
+                        <p class="mb-0 text-secondary" style="font-size: 0.8rem;">
+                            <i class="bi bi-bar-chart-fill me-1 text-success"></i><strong>Level:</strong>
+                            <span class="text-dark fw-semibold ms-1">{{ course.get_level_display|default:course.level }}</span>
+                        </p>
+    
+                        <p class="mb-0 text-secondary" style="font-size: 0.8rem;">
+                            <i class="bi bi-clock-fill me-1 text-warning"></i><strong>Duration:</strong>
+                            <span class="text-dark fw-semibold ms-1">{{ course.duration }}</span>
+                        </p>
+                    </div>
+    
+                    <!-- Dynamic Call to Action -->
+                    {% if enrollment %}
+                        <!-- If enrolled, show progress and 'Start Learning' -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-bold text-dark" style="font-size: 0.8rem;">Your Progress</span>
+                                <span class="fw-bold text-primary" style="font-size: 0.8rem;">{{ progress_percentage|default:0 }}%</span>
+                            </div>
+                            <div class="progress bg-secondary-subtle" style="height: 6px;">
+                                <div class="progress-bar bg-primary rounded-pill" style="width: {{ progress_percentage|default:0 }}%;"></div>
+                            </div>
+                        </div>
+                        
+                        <a href="{% url 'start_learning' course.id %}" class="btn btn-success btn-sm py-2 px-4 fw-semibold rounded-3 shadow-sm">
+                            <i class="bi bi-play-circle-fill me-1"></i> Resume Learning
+                        </a>
+                    {% else %}
+                        <!-- If not enrolled, show 'Enroll Now' -->
+                        <a href="{% url 'checkout' course.id %}" class="btn btn-primary btn-sm py-2 px-4 fw-semibold rounded-3 shadow-sm">
+                            <i class="bi bi-cart-fill me-1"></i> Enroll Now - {% if course.price == 0 %}Free{% else %}₹{{ course.price }}{% endif %}
+                        </a>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Two Column Layout for Content -->
+    <div class="row g-4">
+        <!-- Left Column (Curriculum & Learning Outcomes) -->
+        <div class="col-lg-8">
+            
+            <!-- What You Will Learn (Simplified generic loop if models are simple) -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bolder text-dark mb-4">What You'll Learn</h4>
+                    <ul id="learningOutcomes" class="text-secondary fw-medium mb-0 ps-3 list-unstyled">
+                        <li><i class="bi bi-check-circle-fill text-success me-2"></i> Master core concepts in {{ course.category }}.</li>
+                        <li><i class="bi bi-check-circle-fill text-success me-2"></i> Build practical, real-world projects.</li>
+                        <li><i class="bi bi-check-circle-fill text-success me-2"></i> Earn a verifiable certificate of completion.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Course Curriculum -->
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4">
+                    <h4 class="fw-bolder text-dark mb-4">Course Curriculum</h4>
+                    
+                    <div class="accordion" id="curriculumAccordion">
+                        {% for lesson in course.lessons.all|dictsort:"order" %}
+                        <div class="accordion-item border-0 mb-3 bg-light rounded-4 overflow-hidden">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed bg-light text-dark fw-bold shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#lesson-{{ lesson.id }}">
+                                    Lesson {{ lesson.order }}: {{ lesson.title }}
+                                </button>
+                            </h2>
+                            <div id="lesson-{{ lesson.id }}" class="accordion-collapse collapse" data-bs-parent="#curriculumAccordion">
+                                <div class="accordion-body text-secondary bg-white border-top">
+                                    {{ lesson.description }}
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                            <p class="text-muted">Lessons are currently being added to this course.</p>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column (Instructor & Requirements) -->
+        <div class="col-lg-4">
+            
+            <!-- Requirements -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bolder text-dark mb-3">Requirements</h5>
+                    <ul id="requirements" class="text-secondary fw-medium mb-0 ps-3 list-unstyled">
+                        <li><i class="bi bi-dot fs-4 text-primary"></i> A computer with internet access.</li>
+                        <li><i class="bi bi-dot fs-4 text-primary"></i> A willingness to learn!</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Instructor -->
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-4 text-center">
+                    <h5 class="fw-bolder text-dark mb-4 text-start">Instructor</h5>
+                    <div class="bg-light p-4 rounded-4 border">
+                        <!-- Dynamic Instructor Avatar -->
+                        <img src="{% if course.instructor.profile.avatar %}{{ course.instructor.profile.avatar.url }}{% else %}{% static 'images/default_avatar.png' %}{% endif %}" width="80" height="80" class="rounded-circle mb-3 shadow-sm border border-3 border-white" style="object-fit: cover;" alt="Instructor">
+                        
+                        <h6 class="fw-bold text-dark mb-2">{{ course.instructor.first_name|default:course.instructor.username }}</h6>
+                        <p class="text-secondary fw-medium mb-0" style="font-size: 0.85rem;">
+                            Senior Instructor
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock content %}

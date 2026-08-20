@@ -1,0 +1,240 @@
+{% extends 'student/student_base.html' %} 
+{% load static %}
+
+{% block title %}Profile | EduVerse{% endblock %}
+
+{% block content %}
+    <style>
+        /* Profile Specific */
+        .profile-img-lg {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        /* Table Styling inside Profile */
+        .profile-card .table th {
+            color: var(--gray-500);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            width: 35%;
+            border-bottom: 1px solid var(--primary-100);
+            padding: 1rem 0.5rem;
+        }
+        .profile-card .table td {
+            color: var(--primary-900);
+            font-weight: 500;
+            border-bottom: 1px solid var(--primary-100);
+            padding: 1rem 0.5rem;
+        }
+        .profile-card .table tr:last-child th,
+        .profile-card .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Stat Cards */
+        .stat-card { transition: transform 0.2s ease; }
+        .stat-card:hover { transform: translateY(-3px); }
+        .stat-icon-wrapper {
+            width: 48px; height: 48px;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 12px; margin-bottom: 1rem;
+        }
+
+        /* List Group (Recent Courses) */
+        .list-group-item { border: none; border-bottom: 1px solid var(--primary-100); padding: 1rem 1.25rem; color: var(--primary-800); font-weight: 500; }
+        .list-group-item:last-child { border-bottom: none; }
+        .list-group-item:hover { background-color: var(--primary-50); color: var(--secondary-600); }
+    </style>
+
+    <div class="mb-4 mt-3 mt-lg-0">
+        <h1 class="fw-bolder text-dark mb-1 fs-4">Profile</h1>
+        <p class="text-secondary fw-medium mb-0" style="font-size: 0.85rem;">Manage your personal information and learning statistics.</p>
+    </div>
+
+    <!-- Alert Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Profile Information -->
+    <div class="mb-4 card profile-card border-0">
+        <div class="card-body p-4 p-md-5">
+            <div class="row align-items-center g-4">
+                <div class="col-md-4 text-center border-end-md pb-4 pb-md-0">
+                    <!-- Dynamic Avatar -->
+                    <img src="{% if request.user.profile.avatar and request.user.profile.avatar.name %}{{ request.user.profile.avatar.url }}{% else %}{% static 'images/default_avatar.jpg' %}{% endif %}"
+                        alt="Profile Picture"
+                        class="profile-img-lg mb-3">
+                    <h4 class="fw-bolder text-dark fs-5 mb-1" id="profileName">{{ request.user.first_name }} {{ request.user.last_name }}</h4>
+                    <p class="text-secondary fw-medium mb-0" id="profileRole" style="font-size: 0.85rem;">{{ request.user.profile.get_role_display|default:"Student" }}</p>
+                </div>
+                <div class="col-md-8 ps-md-5">
+                    <h3 class="fw-bolder text-dark fs-5 mb-4">Personal Information</h3>
+                    <table class="table table-borderless mb-0">
+                        <tr>
+                            <th>Name</th>
+                            <td id="profileNameTable">{{ request.user.first_name }} {{ request.user.last_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td id="profileEmail">{{ request.user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Phone</th>
+                            <td id="profilePhone">{{ request.user.profile.phone_number|default:"Not provided" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Joined</th>
+                            <td id="profileJoined">{{ request.user.date_joined|date:"F Y" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-xl-3">
+            <div class="card stat-card text-center border-0 h-100">
+                <div class="card-body p-4">
+                    <div class="stat-icon-wrapper bg-primary-subtle text-primary">
+                        <i class="bi bi-book fs-4"></i>
+                    </div>
+                    <!-- Pulled directly from database contexts if passed in view, or defaulted -->
+                    <h2 class="fw-bolder text-dark fs-3 mb-1">{{ enrolled_courses_count|default:0 }}</h2>
+                    <p class="text-secondary fw-bold mb-0" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Courses Enrolled</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card stat-card text-center border-0 h-100">
+                <div class="card-body p-4">
+                    <div class="stat-icon-wrapper" style="background-color: #dcfce7; color: #16a34a;">
+                        <i class="bi bi-check-circle fs-4"></i>
+                    </div>
+                    <h2 class="fw-bolder text-dark fs-3 mb-1">{{ completed_courses_count|default:0 }}</h2>
+                    <p class="text-secondary fw-bold mb-0" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Completed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card stat-card text-center border-0 h-100">
+                <div class="card-body p-4">
+                    <div class="stat-icon-wrapper" style="background-color: #fef9c3; color: #ca8a04;">
+                        <i class="bi bi-clock fs-4"></i>
+                    </div>
+                    <h2 class="fw-bolder text-dark fs-3 mb-1">{{ learning_hours|default:0 }}</h2>
+                    <p class="text-secondary fw-bold mb-0" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Learning Hours</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card stat-card text-center border-0 h-100">
+                <div class="card-body p-4">
+                    <div class="stat-icon-wrapper" style="background-color: #f3e8ff; color: #9333ea;">
+                        <i class="bi bi-award fs-4"></i>
+                    </div>
+                    <h2 class="fw-bolder text-dark fs-3 mb-1">{{ certificates_count|default:0 }}</h2>
+                    <p class="text-secondary fw-bold mb-0" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Certificates</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Courses -->
+    <div class="card mb-4 border-0">
+        <div class="card-body p-4">
+            <h3 class="fw-bolder text-dark fs-5 mb-3">Recent Courses</h3>
+            <div class="list-group list-group-flush rounded-3 border overflow-hidden">
+                {% for enrollment in recent_enrollments %}
+                    <a href="{% url 'start_learning' enrollment.course.id %}" class="list-group-item list-group-item-action d-flex align-items-center">
+                        <i class="bi bi-play-circle text-primary me-2 fs-5"></i> 
+                        <span class="fw-semibold">{{ enrollment.course.title }}</span>
+                    </a>
+                {% empty %}
+                    <div class="text-muted p-4 text-center fw-medium">
+                        <i class="bi bi-journal-x fs-3 d-block mb-2 opacity-50"></i>
+                        No recent courses found.
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="d-flex gap-3">
+        <button id="editProfileBtn" class="btn btn-primary px-4 py-2 fw-semibold rounded-pill shadow-sm" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+            <i class="bi bi-pencil me-2"></i>Edit Profile
+        </button>
+        <!-- Route this to your password reset/change view -->
+        <a href="#" class="btn btn-outline-secondary px-4 py-2 fw-semibold rounded-pill">
+            <i class="bi bi-shield-lock me-2"></i>Change Password
+        </a>
+    </div>
+
+       
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+
+                <div class="modal-header border-0 bg-light px-4 py-3">
+                    <h5 class="modal-title fw-bolder text-dark fs-5">Edit Profile</h5>
+                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body p-4">
+    
+                    <!-- Form actions point to the view -->
+                    <form id="editProfileForm" method="POST" action="{% url 'profile' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark mb-1" style="font-size: 0.8rem;">Profile Picture</label>
+                            <input type="file" name="avatar" class="form-control" accept="image/*">
+                        </div>
+
+                        <div class="row g-2">
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-semibold text-dark mb-1" style="font-size: 0.8rem;">First Name</label>
+                                <input type="text" name="first_name" class="form-control" value="{{ request.user.first_name }}">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-semibold text-dark mb-1" style="font-size: 0.8rem;">Last Name</label>
+                                <input type="text" name="last_name" class="form-control" value="{{ request.user.last_name }}">
+                            </div>
+                        </div>
+    
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark mb-1" style="font-size: 0.8rem;">Phone</label>
+                            <input type="tel" name="phone_number" class="form-control" value="{{ request.user.profile.phone_number|default:'' }}">
+                        </div>
+    
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-dark mb-1" style="font-size: 0.8rem;">Email</label>
+                            <input type="email" name="email" class="form-control" value="{{ request.user.email }}">
+                        </div>
+    
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold rounded-pill shadow-sm">
+                            Save Changes
+                        </button>
+                    </form>
+    
+                </div>
+            </div>
+        </div>
+    </div>
+        
+{% endblock content %}

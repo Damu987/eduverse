@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Course Catalog | EduVerse{% endblock %}
+
+{% block content %}
+    <!-- Course Specific Styles -->
+    <style>
+        .courses-hero { background: linear-gradient(135deg, #0f172a, #1e293b); padding: 4rem 0 5rem; text-align: center; color: #ffffff; position: relative; }
+        .courses-hero h2 { color: #ffffff; font-size: 2.2rem; margin-bottom: 0.5rem; letter-spacing: -0.5px; }
+        .courses-hero p { color: #e2e8f0; font-size: 0.95rem; font-weight: 400; margin-bottom: 0; }
+        .search-filter-wrapper { background-color: #ffffff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05); margin-top: -3rem; position: relative; z-index: 10; border: 1px solid #f1f5f9; }
+        .form-control, .form-select { background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 0.65rem 1rem; border-radius: 8px; font-size: 0.85rem; color: #1e293b; transition: 0.3s ease; }
+        .form-control:focus, .form-select:focus { background-color: #ffffff; border-color: #5eead4; box-shadow: 0 0 0 4px #f0fdfa; }
+        .form-label { font-weight: 600; color: #1e293b; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3rem;}
+        .courses-section { padding: 4rem 0 2rem; }
+        .course-card { background-color: #ffffff; border-radius: 12px; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px rgba(15, 23, 42, 0.03); overflow: hidden; transition: 0.3s ease; display: flex; flex-direction: column; height: 100%; }
+        .course-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05); border-color: #e2e8f0; }
+        .course-card img { width: 100%; height: 200px; object-fit: cover; border-bottom: 1px solid #f1f5f9; }
+        .course-card-content { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
+        .course-card-content > span { display: inline-block; background-color: #f0fdfa; color: #0f766e; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.8rem; align-self: flex-start; }
+        .course-card-content h5 { font-size: 1.15rem; margin-bottom: 0.5rem; line-height: 1.4;}
+        .course-card-content p { font-size: 0.8rem; color: #64748b; margin-bottom: 1rem; line-height: 1.5; flex-grow: 1;}
+        .course-meta { display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1px solid #f1f5f9; font-size: 0.75rem; color: #475569; font-weight: 500; }
+        .course-meta-bottom { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; font-size: 0.8rem; color: #334155; }
+        .course-price { font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 0;}
+    </style>
+
+    <section class="courses-hero">
+        <div class="container">
+            <h2>Explore Our Courses</h2>
+            <p>Find the perfect course to advance your career.</p>
+        </div>
+    </section>
+    
+    <!-- Search & Filter Unified Block -->
+    <div class="container">
+        <div class="search-filter-wrapper">
+            <form method="GET" action="{% url 'course_catalog' %}">
+                <div class="row g-3 align-items-end">
+                    
+                    <section class="search-section col-lg-5">
+                        <label for="search" class="form-label">Search Courses</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0 text-secondary"><i class="bi bi-search"></i></span>
+                            <input type="search" id="search" name="search" value="{{ search_query }}" class="form-control border-start-0 ps-0" placeholder="What do you want to learn?">
+                            <button type="submit" class="btn btn-primary rounded-end px-3">Search</button>
+                        </div>
+                    </section>
+                    
+                    <section class="filter-section col-lg-7">
+                        <div class="d-flex gap-2 flex-column flex-md-row">
+                            <div class="flex-grow-1">
+                                <label class="form-label">Category</label>
+                                <select class="form-select" name="category" onchange="this.form.submit()">
+                                    <option value="All Categories">All Categories</option>
+                                    {% for cat in categories %}
+                                        <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="flex-grow-1">
+                                <label class="form-label">Level</label>
+                                <select class="form-select" name="level" onchange="this.form.submit()">
+                                    <option value="All Levels">All Levels</option>
+                                    {% for lvl in levels %}
+                                        <option value="{{ lvl }}" {% if selected_level == lvl %}selected{% endif %}>{{ lvl }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+                    
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <section class="courses-section">
+        <div class="container">
+            
+            <!-- Display active filters and result count -->
+            {% if search_query or selected_category or selected_level %}
+            <div class="mb-4">
+                <h5 class="fw-bold">
+                    Found {{ courses.paginator.count }} results 
+                    {% if search_query %} for "{{ search_query }}"{% endif %}
+                </h5>
+                <a href="{% url 'course_catalog' %}" class="btn btn-sm btn-outline-secondary mt-2">Clear All Filters</a>
+            </div>
+            {% endif %}
+
+            <div class="row g-4">
+                <!-- DJANGO LOOP STARTS HERE -->
+                {% for course in courses %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="course-card">
+                        
+                        {% if course.image %}
+                            <img src="{{ course.image.url }}" alt="{{ course.title }}">
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 200px; border-bottom: 1px solid #f1f5f9;">
+                                <i class="bi bi-image text-muted display-4"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="course-card-content">
+                            <span>{{ course.category }}</span>
+                            <h5>{{ course.title }}</h5>
+                            <p>{{ course.description|truncatewords:15 }}</p>
+                            
+                            <div class="course-meta">
+                                <div><i class="bi bi-person-circle me-1"></i> <small>{{ course.instructor.first_name|default:course.instructor.username }}</small></div>
+                                <div class="text-warning"><i class="bi bi-bar-chart-line-fill me-1"></i> <small class="text-dark">{{ course.level }}</small></div>
+                            </div>
+                            
+                            <div class="course-meta-bottom">
+                                <small><i class="bi bi-people me-1 text-primary"></i> {{ course.enrollments.count }} Enrolled</small>
+                                <small><i class="bi bi-clock me-1 text-primary"></i> {{ course.duration }}</small>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-auto">
+                                <p class="course-price">
+                                    {% if course.price == 0 or course.price == 0.00 %}
+                                        <span class="text-success">Free</span>
+                                    {% else %}
+                                        ₹{{ course.price }}
+                                    {% endif %}
+                                </p>
+                                <a href="{% url 'course_details' course.id %}" class="btn btn-primary shadow-sm">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <i class="bi bi-search display-1 text-muted mb-3 d-block"></i>
+                    <h4>No courses found.</h4>
+                    <p class="text-muted">Try adjusting your search or filters to find what you're looking for.</p>
+                    <a href="{% url 'course_catalog' %}" class="btn btn-outline-primary mt-3">Reset Search</a>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- PAGINATION CONTROLS -->
+            {% if courses.has_other_pages %}
+            <nav aria-label="Course pagination" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    
+                    {% if courses.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link text-primary" href="?page={{ courses.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_level %}&level={{ selected_level }}{% endif %}">Previous</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Previous</span></li>
+                    {% endif %}
+
+                    {% for num in courses.paginator.page_range %}
+                        {% if courses.number == num %}
+                            <li class="page-item active"><span class="page-link bg-primary border-primary">{{ num }}</span></li>
+                        {% else %}
+                            <li class="page-item">
+                                <a class="page-link text-primary" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_level %}&level={{ selected_level }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if courses.has_next %}
+                        <li class="page-item">
+                            <a class="page-link text-primary" href="?page={{ courses.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_level %}&level={{ selected_level }}{% endif %}">Next</a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Next</span></li>
+                    {% endif %}
+                    
+                </ul>
+            </nav>
+            {% endif %}
+
+        </div>
+    </section>
+{% endblock content %}

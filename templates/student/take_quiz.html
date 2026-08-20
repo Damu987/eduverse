@@ -1,0 +1,169 @@
+{% extends 'student/student_base.html' %} 
+
+{% block title %}{{ quiz.title }} | EduVerse{% endblock %}
+
+{% block content %}
+    <style>
+        .icon-box { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
+        #questionsContainer { background-color: #ffffff; border: 1px solid var(--primary-200); border-radius: 12px; padding: 1.5rem; }
+        
+        /* Custom styling for Radio Buttons */
+        .choice-label { 
+            cursor: pointer; 
+            display: block; 
+            padding: 1rem 1.25rem; 
+            border: 1px solid var(--primary-200); 
+            border-radius: 8px; 
+            margin-bottom: 0.75rem; 
+            transition: all 0.2s ease;
+            background-color: var(--primary-50);
+        }
+        .choice-label:hover { 
+            background-color: #ffffff; 
+            border-color: var(--secondary-300); 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        /* Style the radio button input natively */
+        input[type="radio"] { accent-color: var(--secondary-600); transform: scale(1.2); }
+        /* Style the text when checked */
+        input[type="radio"]:checked + .choice-text { font-weight: 600; color: var(--secondary-700); }
+        
+        @media (min-width: 768px) { .border-end-md { border-right: 1px dashed var(--primary-200); } }
+    </style>
+               
+    <!-- Header Section -->
+    <div class="mb-4 mt-2 mt-lg-0">
+        <a href="{% url 'start_learning' course.id %}" class="text-decoration-none text-muted mb-2 d-inline-block small fw-bold">
+            <i class="bi bi-arrow-left"></i> Back to Course
+        </a>
+        <h1 class="fw-bolder fs-4 mb-1 text-dark">{{ quiz.title }}</h1>
+        <p class="text-primary fw-bold mb-0" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px;">{{ course.title }}</p>
+        
+        {% if quiz.description %}
+            <p class="mt-2 text-secondary fw-medium lh-base">{{ quiz.description }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Alert Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0 rounded-3" role="alert">
+                {% if message.tags == 'success' %}<i class="bi bi-check-circle-fill me-2 text-success fs-5 align-middle"></i>{% endif %}
+                {% if message.tags == 'error' %}<i class="bi bi-exclamation-triangle-fill me-2 text-danger fs-5 align-middle"></i>{% endif %}
+                <span class="fw-medium text-dark" style="font-size: 0.85rem;">{{ message }}</span>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Quiz Info Ribbon -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-3 p-md-4">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center justify-content-md-center gap-3 border-end-md">
+                        <div class="icon-box" style="background-color: var(--secondary-50); color: var(--secondary-600);">
+                            <i class="bi bi-question-circle fs-5"></i>
+                        </div>
+                        <div class="text-start">
+                            <h6 class="mb-0 text-muted fw-bold" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Questions</h6>
+                            <p class="mb-0 fw-bolder fs-5 text-dark">{{ questions.count }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center justify-content-md-center gap-3 border-end-md">
+                        <div class="icon-box" style="background-color: #f0fdf4; color: var(--success-color);">
+                            <i class="bi bi-check-circle fs-5"></i>
+                        </div>
+                        <div class="text-start">
+                            <h6 class="mb-0 text-muted fw-bold" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Pass Mark</h6>
+                            <p class="mb-0 fw-bolder fs-5 text-dark">60%</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="d-flex align-items-center justify-content-md-center gap-3">
+                        <div class="icon-box" style="background-color: #fef3c7; color: var(--warning-color);">
+                            <i class="bi bi-star fs-5"></i>
+                        </div>
+                        <div class="text-start">
+                            <h6 class="mb-0 text-muted fw-bold" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Total Marks</h6>
+                            <p class="mb-0 fw-bolder fs-5 text-dark">{{ total_marks }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONDITIONAL RENDERING: Check if student already took the quiz -->
+    {% if submission %}
+        
+        <!-- Result Card View -->
+        <div class="card mt-4 border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-body text-center p-5 position-relative">
+                
+                {% if submission.passed %}
+                    <div class="position-absolute top-0 start-50 translate-middle-x w-100" style="height: 6px; background-color: var(--success-color);"></div>
+                    <i class="bi bi-trophy-fill display-1 text-warning mb-3 d-block"></i>
+                    <h4 class="fw-bolder mb-2 text-dark fs-3">Congratulations! You Passed!</h4>
+                {% else %}
+                    <div class="position-absolute top-0 start-50 translate-middle-x w-100" style="height: 6px; background-color: var(--danger-color);"></div>
+                    <i class="bi bi-x-circle-fill display-1 text-danger mb-3 d-block opacity-75"></i>
+                    <h4 class="fw-bolder mb-2 text-danger fs-3">You didn't pass this time.</h4>
+                {% endif %}
+                
+                <div class="d-inline-block bg-light px-4 py-3 rounded-4 mt-3 mb-2 border">
+                    <h2 class="fw-bolder mb-0 text-dark display-5">{{ submission.score }} <span class="fs-4 text-muted">/ {{ submission.total_marks }}</span></h2>
+                </div>
+                
+                <p class="fw-medium mb-4 text-muted" style="font-size: 0.95rem;">You scored {{ submission.percentage|floatformat:1 }}% on this quiz.</p>
+                
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <a href="{% url 'start_learning' course.id %}" class="btn btn-primary rounded-pill fw-semibold shadow-sm px-4 py-2">
+                        <i class="bi bi-play-circle-fill me-1"></i> Continue Course
+                    </a>
+                </div>
+            </div>
+        </div>
+    
+    {% else %}
+        
+        <!-- Active Quiz Form View -->
+        <form method="POST" class="mb-5">
+            {% csrf_token %}
+            <div id="questionsContainer" class="shadow-sm">
+                
+                {% for question in questions %}
+                    <div class="mb-4 pb-4 {% if not forloop.last %}border-bottom border-dashed{% endif %}">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="fw-bolder fs-6 text-dark lh-base me-3">{{ forloop.counter }}. {{ question.text }}</h5>
+                            <span class="badge bg-light text-secondary border fw-semibold mt-1" style="white-space: nowrap;">{{ question.marks }} Marks</span>
+                        </div>
+                        
+                        <!-- Choices Loop -->
+                        <div class="ps-md-3">
+                            {% for choice in question.choices.all %}
+                                <label class="choice-label d-flex align-items-center">
+                                    <input type="radio" name="question_{{ question.id }}" value="{{ choice.id }}" class="me-3" required>
+                                    <span class="choice-text text-dark fw-medium" style="font-size: 0.9rem;">{{ choice.text }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+            
+            <div class="text-end mt-4">
+                <button type="submit" class="btn btn-primary px-5 py-3 fw-bold shadow-sm rounded-pill fs-6" onclick="return confirm('Are you sure you want to submit your answers?');">
+                    <i class="bi bi-send-fill me-2 opacity-75"></i> Submit Quiz Answers
+                </button>
+            </div>
+        </form>
+    
+    {% endif %}
+{% endblock content %}

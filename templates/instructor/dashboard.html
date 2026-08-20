@@ -1,0 +1,259 @@
+{% extends "instructor/instructor_base.html" %}
+
+{% block title %}Instructor Dashboard | EduVerse{% endblock %}
+
+{% block content %}
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 mt-2 mt-lg-0">
+        <div>
+            <h1 class="fw-bolder mb-1 fs-4 text-dark">Instructor Dashboard</h1>
+            <p class="text-secondary fw-medium mb-0" style="font-size: 0.85rem;">Manage your courses, students and learning activities.</p>
+        </div>
+        <a href="{% url 'create_course' %}" class="btn btn-primary rounded-pill fw-semibold shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Create Course
+        </a>
+    </div>
+
+    <!-- Alert Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0 rounded-3" role="alert">
+                {% if message.tags == 'success' %}<i class="bi bi-check-circle-fill me-2 text-success fs-5 align-middle"></i>{% endif %}
+                <span class="fw-medium text-dark" style="font-size: 0.85rem;">{{ message }}</span>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <!-- Total Courses -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 rounded-4 transition-hover">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-secondary fw-bold mb-1" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Total Courses</p>
+                            <h3 class="fw-bolder mb-0 fs-3 text-dark">{{ total_courses }}</h3>
+                            <small class="text-success fw-medium"><i class="bi bi-check-circle me-1"></i> {{ published_courses|default:0 }} Published</small>
+                        </div>
+                        <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="bi bi-book fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Students -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 rounded-4 transition-hover">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-secondary fw-bold mb-1" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Total Students</p>
+                            <h3 class="fw-bolder mb-0 fs-3 text-dark">{{ total_students }}</h3>
+                            <small class="text-primary fw-medium"><i class="bi bi-person-lines-fill me-1"></i> Unique enrollments</small>
+                        </div>
+                        <div class="bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="bi bi-people fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Submissions -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 rounded-4 transition-hover">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-secondary fw-bold mb-1" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Action Needed</p>
+                            <h3 class="fw-bolder mb-0 fs-3 text-dark">{{ pending_reviews|default:0 }}</h3>
+                            <small class="text-warning fw-medium"><i class="bi bi-clock me-1"></i> pending grades</small>
+                        </div>
+                        <div class="bg-warning-subtle text-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="bi bi-file-earmark-text fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rating (Placeholder) -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm h-100 rounded-4 transition-hover">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-secondary fw-bold mb-1" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Average Rating</p>
+                            <h3 class="fw-bolder mb-0 fs-3 text-dark">4.8</h3>
+                            <small class="text-danger fw-medium"><i class="bi bi-star-fill me-1"></i> Excellent</small>
+                        </div>
+                        <div class="bg-danger-subtle text-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="bi bi-star fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Row -->
+    <div class="row g-4 mb-4">
+        
+        <!-- Course Performance -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h5 class="fw-bolder mb-1 fs-5 text-dark">Course Performance</h5>
+                            <p class="text-secondary small fw-medium mb-0">Student enrollment and completion</p>
+                        </div>
+                        <a href="{% url 'manage_courses' %}" class="btn btn-sm btn-outline-primary rounded-pill fw-semibold px-3">View All</a>
+                    </div>
+
+                    <!-- Dynamic Course Loop mapping to course_data -->
+                    {% for data in course_data %}
+                    <div class="mb-3 pb-3 border-bottom">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <div>
+                                <strong class="fs-6 text-dark">{{ data.course.title }}</strong>
+                                <small class="text-secondary d-block mt-1 fw-medium">
+                                    <i class="bi bi-people me-1 text-primary"></i> {{ data.student_count }} students 
+                                    <span class="mx-2 text-muted opacity-50">|</span> 
+                                    <i class="bi bi-play-btn me-1 text-success"></i> {{ data.lesson_count }} lessons
+                                </small>
+                            </div>
+                            <div>
+                                {% if data.course.published %}
+                                    <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle rounded-pill px-2 py-1 fw-semibold">Published</span>
+                                {% else %}
+                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-1 fw-semibold">Draft</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-5 text-muted bg-light rounded-4 border border-dashed mt-3">
+                        <i class="bi bi-journal-x fs-1 opacity-50"></i>
+                        <p class="mt-2 fw-medium mb-0">You haven't created any courses yet.</p>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bolder mb-1 fs-5 text-dark">Quick Actions</h5>
+                    <p class="text-secondary small fw-medium mb-4">Frequently used instructor tools</p>
+
+                    <a href="{% url 'create_course' %}" class="btn btn-primary w-100 mb-3 py-2 fw-semibold rounded-pill shadow-sm">
+                        <i class="bi bi-plus-circle me-2 opacity-75"></i> Create New Course
+                    </a>
+                    <a href="{% url 'manage_courses' %}" class="btn btn-outline-primary w-100 mb-3 py-2 fw-semibold rounded-pill">
+                        <i class="bi bi-file-earmark-text me-2"></i> Review Assignments
+                    </a>
+                    <a href="{% url 'student_management' %}" class="btn btn-outline-secondary w-100 mb-3 py-2 fw-semibold rounded-pill">
+                        <i class="bi bi-people me-2"></i> View Students
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Row (Dynamic Data Integrated) -->
+    <div class="row g-4">
+        
+        <!-- Recent Students Table mapping to recent_enrollments -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden">
+                <div class="card-header bg-white border-bottom p-4 pb-3 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bolder mb-0 fs-5 text-dark">Recent Enrollments</h5>
+                    <a href="{% url 'student_management' %}" class="small text-decoration-none fw-semibold">View All</a>
+                </div>
+                
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 border-0">
+                            <thead class="bg-light text-muted small text-uppercase fw-bold" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                <tr>
+                                    <th class="px-4 py-3 border-0">Student</th>
+                                    <th class="py-3 border-0">Course</th>
+                                    <th class="py-3 border-0">Date</th>
+                                    <th class="text-end px-4 py-3 border-0">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="border-top-0">
+                                {% for enroll in recent_enrollments %}
+                                <tr>
+                                    <td class="px-4 py-3">
+                                        <h6 class="mb-0 fw-bold text-dark fs-6">{{ enroll.student.first_name|default:enroll.student.username }}</h6>
+                                        <small class="text-muted">{{ enroll.student.email }}</small>
+                                    </td>
+                                    <td class="py-3"><span class="text-dark fw-medium small">{{ enroll.course.title|truncatechars:35 }}</span></td>
+                                    <td class="text-muted small py-3">{{ enroll.enrolled_at|date:"M d, Y" }}</td>
+                                    <td class="text-end px-4 py-3">
+                                        <a href="{% url 'student_management' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-semibold">View</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-5 text-muted">
+                                        <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                            <i class="bi bi-people fs-1 opacity-50"></i>
+                                        </div>
+                                        <p class="mb-0 fw-medium">No students enrolled recently.</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Reviews -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm h-100 rounded-4">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bolder mb-0 fs-5 text-dark">Pending Reviews</h5>
+                        {% if pending_reviews > 0 %}
+                            <span class="badge bg-danger rounded-pill px-3 py-2 shadow-sm">{{ pending_reviews }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                        {% if pending_reviews > 0 %}
+                        <div class="text-center py-3">
+                            <div class="bg-warning-subtle text-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="bi bi-file-earmark-text fs-1"></i>
+                            </div>
+                            <h6 class="fw-bold text-dark fs-5">Action Required</h6>
+                            <p class="text-secondary small fw-medium mb-4">You have <strong>{{ pending_reviews }}</strong> assignment(s) waiting to be graded across your courses.</p>
+                            <a href="{% url 'manage_courses' %}" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm">Grade Assignments</a>
+                        </div>
+                        {% else %}
+                        <div class="text-center text-muted py-3">
+                            <div class="bg-success-subtle text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                <i class="bi bi-check-lg fs-1"></i>
+                            </div>
+                            <h6 class="fw-bold text-dark fs-5">All caught up!</h6>
+                            <p class="mb-0 small fw-medium text-secondary">No assignments pending review.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock content %}

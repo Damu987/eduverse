@@ -1,0 +1,104 @@
+{% extends "instructor/instructor_base.html" %}
+{% load static %}
+
+{% block title %}Results: {{ quiz.title }} | EduVerse{% endblock %}
+
+{% block content %}
+    <style>
+        .table th {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--primary-500);
+            background-color: var(--primary-50) !important;
+            font-weight: 600;
+        }
+        .table td {
+            vertical-align: middle;
+            color: var(--primary-800);
+            font-size: 0.85rem;
+            border-bottom: 1px dashed var(--primary-100);
+        }
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+    </style>
+
+    <!-- Header Section -->
+    <div class="mb-4 mt-2 mt-lg-0">
+        <a href="{% url 'manage_quizzes' course.id %}" class="text-decoration-none text-muted mb-2 d-inline-block small fw-bold">
+            <i class="bi bi-arrow-left"></i> Back to Quizzes
+        </a>
+        <h2 class="fw-bolder text-dark mt-1 fs-4">Results: {{ quiz.title }}</h2>
+        <p class="text-secondary fw-medium mb-0" style="font-size: 0.85rem;">Course: <span class="fw-bold text-dark">{{ course.title }}</span></p>
+    </div>
+
+    <!-- Alert Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0 rounded-3" role="alert">
+                {% if message.tags == 'success' %}<i class="bi bi-check-circle-fill me-2 text-success fs-5 align-middle"></i>{% endif %}
+                <span class="fw-medium text-dark" style="font-size: 0.85rem;">{{ message }}</span>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Results Table Card -->
+    <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 border-0">
+                    <thead class="border-0">
+                        <tr>
+                            <th class="py-3 px-4 border-0 border-bottom">Student</th>
+                            <th class="py-3 border-0 border-bottom">Taken On</th>
+                            <th class="py-3 border-0 border-bottom">Score</th>
+                            <th class="py-3 px-4 border-0 border-bottom text-end">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="border-top-0">
+                        
+                        {% for submission in submissions %}
+                        <tr>
+                            <td class="px-4 py-3">
+                                <h6 class="mb-0 fw-bold text-dark fs-6">{{ submission.student.first_name|default:submission.student.username }}</h6>
+                                <small class="text-muted">{{ submission.student.email }}</small>
+                            </td>
+                            <td class="py-3 text-secondary fw-medium small">{{ submission.submitted_at|date:"M d, Y - h:i A" }}</td>
+                            <td class="py-3">
+                                <span class="fw-bolder text-dark fs-6">{{ submission.score }} <span class="text-muted fw-normal fs-6">/ {{ submission.total_marks }}</span></span>
+                                <small class="text-secondary fw-medium ms-1">({{ submission.percentage|floatformat:1 }}%)</small>
+                            </td>
+                            <td class="px-4 py-3 text-end">
+                                {% if submission.passed %}
+                                    <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle rounded-pill px-2 py-1 fw-semibold">
+                                        <i class="bi bi-check-circle-fill me-1"></i> Passed
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle rounded-pill px-2 py-1 fw-semibold">
+                                        <i class="bi bi-x-circle-fill me-1"></i> Failed
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        
+                        {% empty %}
+                        <!-- Empty State -->
+                        <tr>
+                            <td colspan="4" class="text-center py-5">
+                                <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3 mt-3" style="width: 80px; height: 80px;">
+                                    <i class="bi bi-inbox fs-1 text-muted opacity-50"></i>
+                                </div>
+                                <h5 class="fw-bolder text-dark fs-5">No Results Yet</h5>
+                                <p class="text-secondary fw-medium small mb-0">No students have taken this quiz yet.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,78 @@
+{% extends 'student/student_base.html' %} 
+{% load static %}
+
+{% block title %}My Certificates | EduVerse{% endblock %}
+
+{% block content %}
+    <style>
+        .certificate-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--primary-100);
+        }
+        .certificate-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08) !important;
+            border-color: var(--secondary-300);
+        }
+        .cert-icon-bg {
+            width: 80px;
+            height: 80px;
+            background: var(--accent-50);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+        }
+        .border-dashed {
+            border-top: 1px dashed var(--primary-200) !important;
+        }
+    </style>
+
+    <!-- Header Section -->
+    <div class="mb-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="fw-bolder text-dark mb-1 fs-4">My Certificates</h2>
+            <p class="text-secondary fw-medium mb-0" style="font-size: 0.85rem;">View and download your earned credentials.</p>
+        </div>
+    </div>
+
+    <!-- Certificates Grid -->
+    <div class="row g-4">
+        {% for cert in certificates %}
+        <div class="col-md-6 col-xl-4">
+            <div class="card certificate-card shadow-sm border-0 rounded-4 h-100 bg-white">
+                <div class="card-body p-4 text-center d-flex flex-column">
+                    
+                    <div class="cert-icon-bg mb-3">
+                        <i class="bi bi-award-fill text-warning" style="font-size: 2.5rem;"></i>
+                    </div>
+                    
+                    <h5 class="fw-bold text-dark mb-1 fs-6">{{ cert.course.title }}</h5>
+                    <p class="text-muted fw-medium small mb-4">Issued: {{ cert.issued_at|date:"F d, Y" }}</p>
+                    
+                    <div class="mt-auto pt-3 border-dashed">
+                        <a href="{% url 'view_certificate' cert.certificate_id %}" class="btn btn-outline-primary btn-sm w-100 fw-bold rounded-pill shadow-sm">
+                            <i class="bi bi-eye me-1"></i> View Certificate
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <!-- Empty State -->
+        <div class="col-12 text-center py-5 mt-4">
+            <div class="bg-primary-subtle rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                <i class="bi bi-award text-primary fs-1"></i>
+            </div>
+            <h4 class="fw-bold text-dark fs-5">No Certificates Yet</h4>
+            <p class="text-muted fw-medium small mb-4">Complete 100% of a course to earn your first certificate!</p>
+            <a href="{% url 'course_catalog' %}" class="btn btn-primary rounded-pill fw-semibold px-4 py-2 shadow-sm">
+                Explore Courses
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+{% endblock content %}

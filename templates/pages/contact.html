@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us | EduVerse{% endblock %}
+
+{% block content %}
+    <style>
+        .contact-hero { background: linear-gradient(135deg, var(--primary-900), var(--primary-800)); padding: 4rem 0; text-align: center; color: #ffffff; position: relative; }
+        .contact-hero h1 { color: #ffffff; font-size: 2.5rem; letter-spacing: -1px; margin-bottom: 0.5rem; }
+        .contact-hero p { color: var(--primary-200); font-size: 1rem; }
+        
+        .contact-section { padding: 4rem 0; background-color: #ffffff; }
+        .contact-info p { display: flex; align-items: center; gap: 0.75rem; color: var(--primary-700); font-size: 0.95rem; margin-bottom: 1rem; }
+        .contact-info i { color: var(--secondary-600); font-size: 1.25rem; background: var(--secondary-50); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+        
+        .social-links a { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; background-color: var(--primary-50); color: var(--primary-600); border-radius: 50%; transition: var(--transition); text-decoration: none; }
+        .social-links a:hover { background-color: var(--secondary-600); color: #fff; transform: translateY(-3px); }
+        
+        .contact-form { background: #ffffff; padding: 2.5rem; border-radius: var(--radius); border: 1px solid var(--primary-100); box-shadow: var(--shadow); }
+        .contact-form .form-label { font-weight: 600; color: var(--primary-800); font-size: 0.8rem; }
+        .contact-form .form-control { background-color: var(--primary-50); border: 1px solid var(--primary-200); padding: 0.6rem 1rem; font-size: 0.85rem; border-radius: 8px; transition: var(--transition); }
+        .contact-form .form-control:focus { background-color: #ffffff; border-color: var(--secondary-400); box-shadow: 0 0 0 3px var(--secondary-50); }
+        
+        .accordion-item { border: 1px solid var(--primary-200); border-radius: 10px !important; margin-bottom: 0.75rem; overflow: hidden; }
+        .accordion-button { font-weight: 600; color: var(--primary-800); padding: 1rem 1.25rem; font-size: 0.95rem; background-color: #ffffff; box-shadow: none !important; }
+        .accordion-button:not(.collapsed) { color: var(--secondary-700); background-color: var(--secondary-50); }
+        .accordion-body { background-color: #ffffff; font-size: 0.9rem; color: var(--primary-600); }
+    </style>
+            
+    <main style="padding-top: 55px;">  
+        <!-- Page Header -->
+        <section class="contact-hero">
+            <div class="container">
+                <h1>Contact Us</h1>
+                <p>Have questions? We would love to hear from you.</p>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact-section">  
+            <div class="container">     
+                <div class="row g-4 align-items-center"> 
+
+                    <!-- Contact Information -->
+                    <div class="col-lg-5 contact-info pe-lg-4">
+                        <h2 class="fw-bolder">Get In Touch</h2>
+                        <p class="mb-4 text-muted">Our support team is available to help you with courses, account issues, and learning queries.</p>
+                        
+                        <div class="mt-4">
+                            <p><i class="bi bi-envelope"></i>support@eduverse.com</p>
+                            <p><i class="bi bi-telephone"></i>+91 98765 43210</p>
+                            <p><i class="bi bi-geo-alt"></i>Mangaluru, Karnataka, India</p>
+                        </div>
+                        
+                        <!-- Social Media -->
+                        <h4 class="mt-4 mb-3 fs-6 fw-bold">Follow Us</h4>
+                        <div class="social-links d-flex gap-2">
+                            <a href="#"><i class="bi bi-facebook fs-6 bg-transparent w-auto h-auto"></i></a>
+                            <a href="#"><i class="bi bi-twitter-x fs-6 bg-transparent w-auto h-auto"></i></a>
+                            <a href="#"><i class="bi bi-linkedin fs-6 bg-transparent w-auto h-auto"></i></a>
+                            <a href="#"><i class="bi bi-instagram fs-6 bg-transparent w-auto h-auto"></i></a>
+                        </div>
+                    </div>
+                        
+                    <!-- Contact Form -->
+                    <div class="col-lg-7">
+                        <div class="contact-form mx-auto" style="max-width: 550px;">
+                            <h3 class="fw-bolder mb-4">Send Message</h3>
+                            <form>
+                                <div class="mb-3">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" placeholder="Enter your name">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" class="form-control" placeholder="Enter your email">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Subject</label>
+                                    <input type="text" class="form-control" placeholder="Enter subject">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Message</label>
+                                    <textarea class="form-control" rows="4" placeholder="Write your message"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 py-2 shadow-sm mt-2 rounded-pill">Send Message</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </section>
+                
+        <!-- FAQ Section -->
+        <section class="py-5 bg-light pb-5">
+            <div class="container pb-2">
+                <div class="text-center mb-5">
+                    <h2 class="fs-2 fw-bolder mb-2">Frequently Asked Questions</h2>
+                    <p class="text-secondary fw-medium mb-0">Find answers to common questions about EduVerse.</p>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="accordion" id="faqAccordion">
+                            <!-- Question 1 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#questionOne">
+                                        How do I enroll in a course?
+                                    </button>
+                                </h2>
+                                <div id="questionOne" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        To enroll, create an account, select your preferred course, and click the "Enroll Now" button.
+                                    </div>
+                                </div>
+                            </div>
+            
+                            <!-- Question 2 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#questionTwo">
+                                        Are the courses beginner friendly?
+                                    </button>
+                                </h2>
+                                <div id="questionTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Yes. Our courses are designed for beginners as well as experienced learners with structured lessons.
+                                    </div>
+                                </div>
+                            </div>
+            
+                            <!-- Question 3 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#questionThree">
+                                        Do I get a certificate after completion?
+                                    </button>
+                                </h2>
+                                <div id="questionThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Yes. Students receive a certificate after successfully completing the course requirements.
+                                    </div>
+                                </div>
+                            </div>
+            
+                            <!-- Question 4 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#questionFour">
+                                        Can I access courses after purchase?
+                                    </button>
+                                </h2>
+                                <div id="questionFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        Yes. Purchased courses remain available in your account for future learning.
+                                    </div>
+                                </div>
+                            </div>
+            
+                            <!-- Question 5 -->
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#questionFive">
+                                        How can I contact support?
+                                    </button>
+                                </h2>
+                                <div id="questionFive" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                    <div class="accordion-body">
+                                        You can contact our support team through the Contact Us form on this page!
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock content %}

@@ -1,0 +1,195 @@
+{% extends 'student/student_base.html' %} 
+{% load static %}
+
+{% block title %}Assignment: {{ assignment.title }} | EduVerse{% endblock %}
+
+{% block content %}
+    <style>
+        .assignment-card { border-radius: 12px; box-shadow: 0 2px 4px rgba(15, 23, 42, 0.04), 0 4px 6px rgba(15, 23, 42, 0.02) !important; }
+        .history-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; background-color: #f8fafc; }
+        .history-table td { font-size: 0.8rem; vertical-align: middle; }
+        
+        /* Make sure the Django form fields get Bootstrap styling */
+        input[type="file"] { width: 100%; padding: 0.5rem; background-color: var(--primary-50); border: 1px solid var(--primary-200); border-radius: 8px; font-size: 0.85rem; }
+        textarea { width: 100%; padding: 0.6rem 1rem; background-color: var(--primary-50); border: 1px solid var(--primary-200); border-radius: 8px; font-size: 0.85rem; }
+        textarea:focus, input[type="file"]:focus { outline: none; border-color: var(--secondary-400); box-shadow: 0 0 0 3px var(--secondary-50); }
+    </style>
+              
+    <!-- Header Section -->
+    <div class="mb-4">
+        <a href="{% url 'student_dashboard' %}" class="text-decoration-none text-muted mb-2 d-inline-block small fw-bold">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+        <h1 class="fw-bolder text-dark mb-1 fs-4 mt-2">Assignment Submission</h1>
+        <p class="text-secondary fw-medium mb-0" style="font-size: 0.85rem;">
+            <i class="bi bi-folder2-open me-2"></i>{{ course.title }}
+        </p>
+    </div>
+
+    <!-- Alert Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row g-4">
+        <!-- Left Column: Details & Submission Form -->
+        <div class="col-xl-8">
+            
+            <!-- Assignment Details -->
+            <div class="mb-4">
+                <div class="card assignment-card border-0">
+                    <div class="card-body p-4">
+                        <h3 class="fw-bolder text-dark mb-2 fs-5">{{ assignment.title }}</h3>
+                        <p class="text-secondary fw-medium mb-4">{{ assignment.description|linebreaksbr }}</p>
+
+                        <div class="d-flex flex-column gap-2 border-top pt-3">
+                            <p class="mb-0 text-secondary d-flex align-items-center" style="font-size: 0.85rem;">
+                                <strong class="text-dark me-2" style="width: 85px;">Deadline:</strong>
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-1 fw-semibold">
+                                    {{ assignment.due_date|date:"d M Y" }}
+                                </span>
+                            </p>
+                            <p class="mb-0 text-secondary d-flex align-items-center" style="font-size: 0.85rem;">
+                                <strong class="text-dark me-2" style="width: 85px;">Total Marks:</strong> 
+                                <span class="fw-bold text-dark bg-light px-2 py-1 rounded-2 border" style="font-size: 0.8rem;">{{ assignment.total_marks }}</span>
+                            </p>
+                            <p class="mb-0 text-secondary d-flex align-items-center" style="font-size: 0.85rem;">
+                                <strong class="text-dark me-2" style="width: 85px;">Status:</strong> 
+                                {% if submission %}
+                                    <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle rounded-pill px-2 py-1 fw-semibold">Submitted</span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger-emphasis border border-danger-subtle rounded-pill px-2 py-1 fw-semibold">Not Submitted</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submission Form OR Completion View -->
+            <div class="mb-4">
+                <div class="card border-0 assignment-card">
+                   <div class="card-body p-4">
+                        
+                        {% if submission %}
+                            <!-- ALREADY SUBMITTED VIEW -->
+                            <h3 class="fw-bolder text-dark mb-3 fs-6">Your Submission</h3>
+                            
+                            <div class="alert alert-success border-0 bg-success bg-opacity-10 py-2 px-3 mb-4 rounded-3 d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill text-success fs-5 me-2"></i>
+                                <span class="text-success fw-bold" style="font-size: 0.85rem;">Successfully submitted on {{ submission.submitted_at|date:"d M Y" }}</span>
+                            </div>
+
+                            {% if submission.text_answer %}
+                                <h6 class="fw-bold text-dark mb-2" style="font-size: 0.85rem;">Comments provided:</h6>
+                                <div class="bg-light p-3 rounded-3 mb-3 border">
+                                    <p class="mb-0 text-secondary small fst-italic">"{{ submission.text_answer }}"</p>
+                                </div>
+                            {% endif %}
+                            
+                            {% if submission.file %}
+                                <a href="{{ submission.file.url }}" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill fw-semibold shadow-sm">
+                                    <i class="bi bi-file-earmark-arrow-down-fill me-1"></i> Download Submitted File
+                                </a>
+                            {% endif %}
+
+                        {% else %}
+                            <!-- NOT SUBMITTED YET: SHOW UPLOAD FORM -->
+                            <h3 class="fw-bolder text-dark mb-3 fs-6">Submit Assignment</h3>
+                            <form method="POST" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold text-dark mb-1" style="font-size: 0.85rem;">Upload Assignment</label>
+                                    {{ form.file }}
+                                    <small class="text-secondary mt-1 d-block fw-medium" style="font-size: 0.75rem;">
+                                        <i class="bi bi-info-circle me-1"></i> Accepted formats: PDF, DOCX, ZIP
+                                    </small>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold text-dark mb-1" style="font-size: 0.85rem;">Comments (Optional)</label>
+                                    {{ form.text_answer }}
+                                </div>
+
+                               <div class="d-grid mt-4">
+                                    <button type="submit" class="btn btn-primary py-2 fw-semibold rounded-pill shadow-sm">
+                                        <i class="bi bi-cloud-arrow-up-fill me-1"></i> Submit Assignment
+                                    </button>
+                                </div>
+                            </form>
+                        {% endif %}
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Submission History / Grading -->
+        <div class="col-xl-4">
+            <div class="card border-0 assignment-card h-100">
+               <div class="card-body p-4">
+                    <h3 class="fw-bolder text-dark mb-3 fs-6">Instructor Evaluation</h3>
+
+                    <div class="table-responsive mt-3">
+                        <table class="table table-sm table-hover align-middle mb-0 border-0 history-table">
+                            <thead>
+                                <tr>
+                                    <th class="border-0 rounded-start-2">Status</th>
+                                    <th class="border-0 rounded-end-2 text-end">Marks</th>
+                                </tr>
+                            </thead>
+                            <tbody class="border-top-0">
+                                
+                                {% if submission %}
+                                    {% if submission.is_graded %}
+                                        <tr>
+                                            <td class="py-3">
+                                                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle rounded-pill fw-semibold" style="font-size: 0.7rem;">Reviewed</span>
+                                            </td>
+                                            <td class="py-3 fw-bold text-dark text-end fs-6">
+                                                {{ submission.marks_awarded }}/{{ assignment.total_marks }}
+                                            </td>
+                                        </tr>
+                                    {% else %}
+                                        <tr>
+                                            <td class="py-3">
+                                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill fw-semibold" style="font-size: 0.7rem;">Pending Review</span>
+                                            </td>
+                                            <td class="py-3 fw-medium text-muted text-end small">
+                                                Awaiting Grade
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="2" class="text-center py-4 text-muted small fw-medium">
+                                            Submit your assignment to see your grade.
+                                        </td>
+                                    </tr>
+                                {% endif %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Instructor Feedback -->
+                    {% if submission.is_graded and submission.feedback %}
+                        <div class="mt-4 pt-3 border-top">
+                            <h6 class="fw-bold text-dark mb-2" style="font-size: 0.8rem;">Instructor Feedback:</h6>
+                            <div class="bg-primary-subtle bg-opacity-25 p-3 rounded-3 border border-primary-subtle">
+                                <p class="mb-0 text-dark fw-medium small lh-base">"{{ submission.feedback }}"</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

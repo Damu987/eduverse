@@ -1,0 +1,726 @@
+/* =========================================================
+   EDUVERSE — SaaS DASHBOARD UI
+   Keep all existing CSS above this section.
+   ========================================================= */
+
+/* ---------- SaaS Design Tokens ---------- */
+
+:root {
+    --saas-bg: var(--primary-50, #f8fafc);
+    --saas-surface: #ffffff;
+    --saas-border: var(--primary-200, #e2e8f0);
+    --saas-text: var(--primary-900, #0f172a);
+    --saas-muted: var(--primary-500, #64748b);
+    --saas-primary: var(--secondary-600, #2563eb);
+    --saas-primary-light: var(--secondary-50, #eff6ff);
+    --saas-success: var(--success-color, #22c55e);
+    --saas-warning: var(--warning-color, #f59e0b);
+    --saas-danger: var(--danger-color, #ef4444);
+
+    --saas-radius-sm: 10px;
+    --saas-radius-md: 14px;
+    --saas-radius-lg: 18px;
+
+    --saas-shadow-sm:
+        0 1px 2px rgba(15, 23, 42, 0.03);
+
+    --saas-shadow:
+        0 8px 25px rgba(15, 23, 42, 0.06);
+
+    --saas-shadow-lg:
+        0 15px 40px rgba(15, 23, 42, 0.08);
+}
+
+
+/* ---------- Global Dashboard ---------- */
+
+.dashboard-layout {
+    min-height: 100vh;
+    background: var(--saas-bg);
+}
+
+.dashboard-content {
+    min-height: 100vh;
+    background:
+        radial-gradient(
+            circle at top right,
+            rgba(59, 130, 246, 0.035),
+            transparent 30%
+        ),
+        var(--saas-bg);
+}
+
+
+/* ---------- Sidebar ---------- */
+
+.sidebar {
+    background: var(--saas-surface) !important;
+    border-right: 1px solid var(--saas-border) !important;
+    box-shadow: 4px 0 20px rgba(15, 23, 42, 0.025);
+}
+
+.sidebar > div:first-child {
+    background: linear-gradient(
+        to bottom,
+        #ffffff,
+        #fbfdff
+    );
+}
+
+.sidebar .navbar-brand {
+    letter-spacing: -0.5px;
+    transition: transform 0.25s ease;
+}
+
+.sidebar .navbar-brand:hover {
+    transform: translateY(-1px);
+}
+
+
+/* ---------- Sidebar Navigation ---------- */
+
+.sidebar .nav-link {
+    position: relative;
+    min-height: 42px;
+    border: 1px solid transparent;
+}
+
+.sidebar .nav-link i {
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar .nav-link:hover {
+    background: var(--saas-primary-light);
+    border-color: rgba(37, 99, 235, 0.08);
+    transform: translateX(4px);
+}
+
+.sidebar .nav-link.active {
+    background: linear-gradient(
+        135deg,
+        var(--secondary-500, #3b82f6),
+        var(--secondary-600, #2563eb)
+    ) !important;
+
+    box-shadow:
+        0 8px 18px rgba(37, 99, 235, 0.18);
+}
+
+.sidebar .nav-link.active::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: 0 5px 5px 0;
+    background: #ffffff;
+}
+
+
+/* ---------- Sidebar Profile ---------- */
+
+.student-profile {
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            var(--primary-50, #f8fafc)
+        ) !important;
+
+    border: 1px solid var(--saas-border) !important;
+
+    box-shadow: var(--saas-shadow-sm);
+}
+
+.profile-img {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.student-profile:hover .profile-img {
+    transform: scale(1.05);
+    box-shadow:
+        0 5px 15px rgba(37, 99, 235, 0.18);
+}
+
+
+/* ---------- Top Navigation ---------- */
+
+.top-nav {
+    min-height: 70px;
+    background: rgba(255, 255, 255, 0.92) !important;
+    border-bottom: 1px solid var(--saas-border) !important;
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+
+    box-shadow:
+        0 4px 20px rgba(15, 23, 42, 0.035) !important;
+}
+
+
+/* ---------- Mobile Menu ---------- */
+
+#menuToggle {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+#menuToggle:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 5px 12px rgba(15, 23, 42, 0.08) !important;
+}
+
+#menuToggle:active {
+    transform: scale(0.96);
+}
+
+
+/* ---------- Main Content ---------- */
+
+.dashboard-content > .p-4,
+.dashboard-content > .p-md-5 {
+    max-width: 1700px;
+}
+
+
+/* =========================================================
+   SAAS CARDS
+   These will automatically improve cards inside
+   {% block content %}
+   ========================================================= */
+
+.dashboard-content .card {
+    position: relative;
+
+    background: var(--saas-surface);
+    border: 1px solid var(--saas-border);
+
+    border-radius: var(--saas-radius-lg);
+
+    box-shadow: var(--saas-shadow);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.dashboard-content .card:hover {
+    transform: translateY(-3px);
+
+    box-shadow: var(--saas-shadow-lg);
+
+    border-color:
+        rgba(37, 99, 235, 0.16);
+}
+
+
+/* ---------- Card Headers ---------- */
+
+.dashboard-content .card-header {
+    background: transparent;
+    border-bottom: 1px solid var(--saas-border);
+    padding: 1rem 1.25rem;
+}
+
+
+/* ---------- Card Body ---------- */
+
+.dashboard-content .card-body {
+    padding: 1.25rem;
+}
+
+
+/* =========================================================
+   STAT / METRIC CARDS
+   ========================================================= */
+
+.dashboard-content .stat-card,
+.dashboard-content .dashboard-stat-card,
+.dashboard-content .metric-card {
+    overflow: hidden;
+}
+
+.dashboard-content .stat-card::after,
+.dashboard-content .dashboard-stat-card::after,
+.dashboard-content .metric-card::after {
+    content: "";
+
+    position: absolute;
+
+    width: 90px;
+    height: 90px;
+
+    right: -30px;
+    bottom: -30px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(59, 130, 246, 0.055);
+
+    pointer-events: none;
+}
+
+
+/* ---------- Numbers ---------- */
+
+.dashboard-content .display-6,
+.dashboard-content .display-5 {
+    color: var(--saas-text);
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+
+/* =========================================================
+   PRIMARY BUTTONS
+   ========================================================= */
+
+.dashboard-content .btn-primary,
+.btn-primary {
+    background:
+        linear-gradient(
+            135deg,
+            var(--secondary-500, #3b82f6),
+            var(--secondary-600, #2563eb)
+        );
+
+    border: none;
+
+    box-shadow:
+        0 5px 14px rgba(37, 99, 235, 0.16);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.dashboard-content .btn-primary:hover,
+.btn-primary:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 8px 18px rgba(37, 99, 235, 0.22);
+}
+
+.dashboard-content .btn-primary:active,
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+
+/* ---------- Outline Buttons ---------- */
+
+.dashboard-content .btn-outline-primary {
+    border-color: var(--secondary-300, #93c5fd);
+    color: var(--secondary-600, #2563eb);
+}
+
+.dashboard-content .btn-outline-primary:hover {
+    background: var(--secondary-600, #2563eb);
+    border-color: var(--secondary-600, #2563eb);
+}
+
+
+/* =========================================================
+   BADGES
+   ========================================================= */
+
+.dashboard-content .badge {
+    border-radius: 999px;
+    padding: 0.4em 0.7em;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   PROGRESS BARS
+   ========================================================= */
+
+.dashboard-content .progress {
+    height: 7px;
+
+    background: var(--primary-100, #f1f5f9);
+
+    border-radius: 999px;
+
+    overflow: hidden;
+}
+
+.dashboard-content .progress-bar {
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--secondary-500, #3b82f6),
+            var(--secondary-600, #2563eb)
+        );
+}
+
+
+/* =========================================================
+   TABLES — SaaS STYLE
+   ========================================================= */
+
+.dashboard-content .table {
+    margin-bottom: 0;
+    color: var(--saas-text);
+}
+
+.dashboard-content .table thead th {
+    background: var(--primary-50, #f8fafc);
+
+    color: var(--saas-muted);
+
+    font-size: 0.7rem;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+    border-bottom:
+        1px solid var(--saas-border);
+
+    padding: 0.9rem 1rem;
+}
+
+.dashboard-content .table tbody td {
+    padding: 0.9rem 1rem;
+
+    border-color:
+        var(--primary-100, #f1f5f9);
+
+    vertical-align: middle;
+}
+
+.dashboard-content .table tbody tr {
+    transition:
+        background 0.2s ease;
+}
+
+.dashboard-content .table tbody tr:hover {
+    background:
+        var(--primary-50, #f8fafc);
+}
+
+
+/* =========================================================
+   FORMS
+   ========================================================= */
+
+.dashboard-content .form-control,
+.dashboard-content .form-select {
+    min-height: 42px;
+
+    border: 1px solid var(--saas-border);
+
+    border-radius: 10px;
+
+    color: var(--saas-text);
+
+    background: #ffffff;
+
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.02);
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.dashboard-content .form-control:focus,
+.dashboard-content .form-select:focus {
+    border-color:
+        var(--secondary-400, #60a5fa);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(59, 130, 246, 0.10);
+}
+
+.dashboard-content .form-label {
+    color: var(--saas-text);
+
+    font-size: 0.75rem;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   NOTIFICATION DROPDOWN
+   ========================================================= */
+
+.top-nav .dropdown-menu {
+    border: 1px solid var(--saas-border) !important;
+
+    box-shadow:
+        0 15px 40px rgba(15, 23, 42, 0.12) !important;
+
+    overflow: hidden;
+}
+
+.top-nav .dropdown-item {
+    transition:
+        background 0.2s ease;
+}
+
+.top-nav .dropdown-item:hover {
+    background:
+        var(--primary-50, #f8fafc) !important;
+}
+
+
+/* Notification bell */
+
+.top-nav .bi-bell {
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.top-nav .bi-bell:hover {
+    color: var(--secondary-600, #2563eb);
+    transform: rotate(-8deg);
+}
+
+
+/* =========================================================
+   ALERTS
+   ========================================================= */
+
+.dashboard-content .alert {
+    border: 1px solid transparent;
+    border-radius: var(--saas-radius-md);
+
+    box-shadow: var(--saas-shadow-sm);
+}
+
+
+/* =========================================================
+   LINKS
+   ========================================================= */
+
+.dashboard-content a:not(.btn):not(.nav-link) {
+    transition: color 0.2s ease;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+.sidebar::-webkit-scrollbar,
+.dashboard-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track,
+.dashboard-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb,
+.dashboard-content::-webkit-scrollbar-thumb {
+    background:
+        var(--primary-300, #cbd5e1);
+
+    border-radius: 999px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover,
+.dashboard-content::-webkit-scrollbar-thumb:hover {
+    background:
+        var(--primary-400, #94a3b8);
+}
+
+
+/* =========================================================
+   RESPONSIVE — TABLET
+   ========================================================= */
+
+@media (max-width: 1199.98px) {
+
+    .dashboard-content > .p-4,
+    .dashboard-content > .p-md-5 {
+        padding: 1.25rem !important;
+    }
+
+    .top-nav {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — MOBILE
+   ========================================================= */
+
+@media (max-width: 767.98px) {
+
+    body {
+        font-size: 0.78rem;
+    }
+
+    .top-nav {
+        min-height: 62px;
+        padding: 0.75rem 1rem;
+    }
+
+    .dashboard-content > .p-4,
+    .dashboard-content > .p-md-5 {
+        padding: 1rem !important;
+    }
+
+    .dashboard-content .card {
+        border-radius: 14px;
+    }
+
+    .dashboard-content .card-body {
+        padding: 1rem;
+    }
+
+    .dashboard-content .card-header {
+        padding: 0.85rem 1rem;
+    }
+
+    .dashboard-content .table {
+        font-size: 0.72rem;
+    }
+
+    .dashboard-content .table thead th,
+    .dashboard-content .table tbody td {
+        padding: 0.7rem;
+    }
+
+    .top-nav .dropdown-menu {
+        width: calc(100vw - 30px) !important;
+
+        max-width: 360px;
+
+        right: -8px !important;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 575.98px) {
+
+    .top-nav {
+        padding: 0.65rem 0.75rem;
+    }
+
+    #menuToggle {
+        margin-right: auto !important;
+    }
+
+    .dashboard-content > .p-4,
+    .dashboard-content > .p-md-5 {
+        padding: 0.75rem !important;
+    }
+
+    .dashboard-content .card {
+        border-radius: 12px;
+    }
+
+    .dashboard-content .display-6 {
+        font-size: 1.65rem;
+    }
+
+    .dashboard-content .display-5 {
+        font-size: 1.8rem;
+    }
+
+    .dashboard-content .btn {
+        font-size: 0.75rem;
+    }
+
+    .student-profile {
+        margin: 0.6rem;
+    }
+
+}
+
+
+/* =========================================================
+   SIDEBAR MOBILE ANIMATION
+   ========================================================= */
+
+@media (max-width: 991.98px) {
+
+    .sidebar {
+        box-shadow:
+            12px 0 35px rgba(15, 23, 42, 0.12);
+    }
+
+    .sidebar-overlay {
+        background:
+            rgba(15, 23, 42, 0.35);
+
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+        scroll-behavior: auto !important;
+    }
+
+}
+ .card { 
+            background-color: #ffffff !important; 
+            border: 1px solid var(--primary-100) !important; 
+            box-shadow: var(--shadow) !important; 
+            border-radius: var(--radius) !important;
+            transition: var(--transition);
+        }
+        .card-header { background-color: transparent !important; border-bottom: 1px solid var(--primary-100) !important; padding: 1rem 1.2rem; }
+        .dashboard-stat-card { border: 1px solid var(--primary-100) !important; }
+        .dashboard-stat-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08) !important; border-color: var(--secondary-300) !important; }
+        
+        /* The Creative Welcome Banner */
+        .welcome-banner {
+            background: linear-gradient(135deg, var(--secondary-50), var(--secondary-100)) !important;
+            border: 1px solid var(--secondary-200) !important;
+            overflow: hidden;
+        }
+        .welcome-character {
+            position: absolute;
+            right: 5%;
+            bottom: -5px;
+            height: 120%;
+            pointer-events: none;
+            filter: drop-shadow(-8px 8px 10px rgba(0,0,0,0.1));
+            animation: float-avatar 4s ease-in-out infinite;
+        }
+        @keyframes float-avatar {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+            100% { transform: translateY(0); }
+        }

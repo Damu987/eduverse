@@ -1,0 +1,127 @@
+{% extends "instructor/instructor_base.html" %}
+{% load static %}
+
+{% block title %}{% if assignment %}Edit Assignment{% else %}Create Assignment{% endif %} | EduVerse{% endblock %}
+
+{% block content %}
+    <style>
+        /* Ensuring standard Django widgets look uniform and sleek */
+        .form-control, input[type="text"], input[type="number"], input[type="date"], textarea {
+            background-color: var(--primary-50) !important;
+            border: 1px solid var(--primary-200) !important;
+            padding: 0.7rem 1rem !important;
+            border-radius: 8px !important;
+            font-size: 0.85rem !important;
+            font-weight: 500 !important;
+            color: var(--primary-800) !important;
+            width: 100%;
+        }
+        .form-control:focus, input:focus, textarea:focus {
+            background-color: #ffffff !important;
+            border-color: var(--secondary-300) !important;
+            box-shadow: 0 0 0 4px var(--secondary-50) !important;
+            outline: none;
+        }
+        textarea { min-height: 120px; }
+    </style>
+
+    <!-- Header -->
+    <div class="mb-4 mt-2 mt-lg-0">
+        <a href="{% url 'manage_assignments' course.id %}" class="text-decoration-none text-muted mb-2 d-inline-block small fw-bold">
+            <i class="bi bi-arrow-left"></i> Back to Assignments
+        </a>
+        
+        <!-- Dynamic Page Heading -->
+        <h1 class="fw-bolder fs-4 mb-1 text-dark">
+            {% if assignment %}
+                Edit Assignment: {{ assignment.title }}
+            {% else %}
+                Create New Assignment
+            {% endif %}
+        </h1>
+        
+        <p class="text-secondary fw-medium mb-0" style="font-size: 0.85rem;">
+            Course: <span class="fw-bold text-dark">{{ course.title }}</span>
+        </p>
+    </div>
+
+    <!-- Alert Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0 rounded-3" role="alert">
+                {% if message.tags == 'success' %}<i class="bi bi-check-circle-fill me-2 text-success fs-5 align-middle"></i>{% endif %}
+                <span class="fw-medium text-dark" style="font-size: 0.85rem;">{{ message }}</span>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    
+                    <form method="POST" action="">
+                        {% csrf_token %}
+
+                        <!-- Assignment Title -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-dark mb-1" style="font-size: 0.8rem;">Assignment Title</label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="text-danger small mt-1 fw-medium" style="font-size: 0.75rem;">{{ form.title.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <!-- Deadline -->
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-semibold text-dark mb-1" style="font-size: 0.8rem;">Deadline / Due Date</label>
+                                {{ form.due_date }}
+                                {% if form.due_date.errors %}
+                                    <div class="text-danger small mt-1 fw-medium" style="font-size: 0.75rem;">{{ form.due_date.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Total Marks -->
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label fw-semibold text-dark mb-1" style="font-size: 0.8rem;">Total Marks</label>
+                                {{ form.total_marks }}
+                                {% if form.total_marks.errors %}
+                                    <div class="text-danger small mt-1 fw-medium" style="font-size: 0.75rem;">{{ form.total_marks.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-dark mb-1" style="font-size: 0.8rem;">Instructions for Students</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small mt-1 fw-medium" style="font-size: 0.75rem;">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <hr class="my-4 text-muted opacity-25">
+
+                        <!-- Dynamic Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold rounded-pill shadow-sm">
+                                {% if assignment %}
+                                    <i class="bi bi-save me-1"></i> Update Assignment
+                                {% else %}
+                                    <i class="bi bi-plus-circle me-1"></i> Create Assignment
+                                {% endif %}
+                            </button>
+                            
+                            <a href="{% url 'manage_assignments' course.id %}" class="btn btn-outline-secondary px-4 py-2 fw-semibold rounded-pill">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

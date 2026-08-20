@@ -1,0 +1,89 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block title %}Checkout | EduVerse{% endblock %}
+
+{% block content %}
+<style>
+    /* Styling to make the checkout card look premium */
+    .checkout-card { border-radius: 16px; border: 1px solid var(--primary-100); }
+    .course-thumb { width: 110px; height: 80px; object-fit: cover; border-radius: 10px; border: 1px solid var(--primary-100); }
+    .form-control-cc { background-color: var(--primary-50); border: 1px solid var(--primary-200); padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.95rem; font-family: monospace; letter-spacing: 2px; }
+    .form-control-cc:focus { border-color: var(--teal-300); box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15); outline: none; }
+</style>
+
+<main class="py-5" style="background-color: var(--primary-50); min-height: 100vh; padding-top: 80px !important;">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7">
+                
+                <div class="text-center mb-4">
+                    <h2 class="fw-bolder text-dark mb-1">Secure Checkout</h2>
+                    <p class="text-muted fw-medium small">Complete your purchase to start learning.</p>
+                </div>
+
+                <div class="card checkout-card shadow-sm bg-white p-4 p-md-5">
+                    
+                    <h5 class="fw-bold text-dark mb-4 fs-6 text-uppercase" style="letter-spacing: 1px;">Order Summary</h5>
+                    
+                    <div class="d-flex align-items-center mb-4 p-3 rounded-3" style="background-color: var(--primary-50);">
+                        {% if course.image %}
+                            <img src="{{ course.image.url }}" class="course-thumb me-3 shadow-sm" alt="{{ course.title }}">
+                        {% else %}
+                            <div class="course-thumb me-3 d-flex align-items-center justify-content-center bg-secondary bg-opacity-25 shadow-sm">
+                                <i class="bi bi-image text-muted fs-3"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div>
+                            <h6 class="mb-1 fw-bold text-dark lh-sm" style="font-size: 0.9rem;">{{ course.title }}</h6>
+                            <p class="text-muted mb-0 small fw-medium">By {{ course.instructor.first_name|default:course.instructor.username }}</p>
+                        </div>
+                    </div>
+
+                    <hr class="border-secondary opacity-25 mb-4">
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="text-secondary fw-semibold">Total Due:</span>
+                        <span class="fw-bolder fs-3 text-dark">₹{{ course.price }}</span>
+                    </div>
+
+                    <!-- Secure Payment Form -->
+                    <form action="{% url 'process_payment' course.id %}" method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label text-dark fw-semibold" style="font-size: 0.8rem;">Card Information</label>
+                            <input type="text" class="form-control-cc w-100" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                            
+                            <div class="row g-2 mt-2">
+                                <div class="col-6">
+                                    <input type="text" class="form-control-cc w-100" placeholder="MM/YY" maxlength="5" required>
+                                </div>
+                                <div class="col-6">
+                                    <input type="text" class="form-control-cc w-100" placeholder="CVC" maxlength="3" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold rounded-pill shadow-sm" style="font-size: 1rem;">
+                            <i class="bi bi-lock-fill me-2 opacity-75"></i> Pay ₹{{ course.price }} & Enroll
+                        </button>
+                    </form>
+
+                    <p class="text-center text-muted mt-4 mb-0" style="font-size: 0.75rem;">
+                        <i class="bi bi-shield-check text-success me-1"></i> Payments are secure and encrypted.
+                    </p>
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="{% url 'course_details' course.id %}" class="text-muted text-decoration-none small fw-semibold">
+                        <i class="bi bi-arrow-left"></i> Return to Course Details
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock content %}

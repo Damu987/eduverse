@@ -1,0 +1,354 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}EduVerse | Learning Management System{% endblock %}
+
+{% block content %}
+    <style>
+        /* Advanced Interactive Theme - Compact Version */
+        :root {
+            --primary-50: #f8fafc; --primary-100: #f1f5f9; --primary-200: #e2e8f0; --primary-300: #cbd5e1;
+            --primary-600: #475569; --primary-700: #334155; --primary-800: #1e293b; --primary-900: #0f172a;
+            --secondary-50: #f0fdfa; --secondary-100: #ccfbf1; --secondary-500: #14b8a6; 
+            --secondary-600: #0d9488; --secondary-700: #0f766e; --secondary-900: #134e4a;
+            --success-color: #10b981; --warning-color: #f59e0b;
+            --radius: 14px;
+            --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body { font-family: 'Poppins', sans-serif; font-size: 0.85rem; color: var(--primary-600); background-color: var(--primary-50); line-height: 1.6; overflow-x: hidden; }
+        h1, h2, h3, h4, h5, h6 { color: var(--primary-900); font-weight: 700; letter-spacing: -0.5px; }
+        .text-primary { color: var(--secondary-600) !important; }
+
+        /* Buttons */
+        .btn { font-size: 0.8rem; font-weight: 600; padding: 0.5rem 1.25rem; border-radius: 50rem; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; }
+        .btn-primary { background: linear-gradient(135deg, var(--secondary-500), var(--secondary-700)); border: none; color: #fff; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(13, 148, 136, 0.35); color: #fff; }
+        .btn-outline-primary { color: var(--secondary-600); border: 2px solid var(--secondary-100); background-color: transparent; }
+        .btn-outline-primary:hover { background-color: var(--secondary-50); border-color: var(--secondary-300); transform: translateY(-2px); color: var(--secondary-700); }
+
+        /* Hero Section w/ Animations */
+        .hero-section { padding: 7rem 0 5rem; background-color: #ffffff; position: relative; }
+        .hero-bg-blob { position: absolute; width: 500px; height: 500px; background: radial-gradient(circle, var(--secondary-100) 0%, transparent 70%); top: -150px; right: -150px; border-radius: 50%; z-index: 0; opacity: 0.6; }
+        .hero-content { position: relative; z-index: 1; }
+        .hero-section h1 { font-size: 3.2rem; font-weight: 800; line-height: 1.2; margin-bottom: 1rem; color: var(--primary-900); background: none !important; }
+        
+        /* Floating Image Animation */
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
+        .hero-image-wrapper { position: relative; animation: float 6s ease-in-out infinite; z-index: 1; }
+        .hero-image-wrapper img { border-radius: 20px; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12); width: 100%; height: 360px; object-fit: cover; }
+        
+        /* Glassmorphism Badge */
+        .glass-badge { position: absolute; bottom: -15px; left: -20px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.5); padding: 0.8rem 1.2rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 0.8rem; z-index: 2; }
+        .glass-icon { width: 38px; height: 38px; background: var(--secondary-100); color: var(--secondary-600); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+
+        /* Compact Courses Grid */
+        .courses-section { padding: 5rem 0; }
+        .course-card { background: #ffffff; border-radius: 16px; border: 1px solid var(--primary-100); overflow: hidden; transition: var(--transition); display: flex; flex-direction: column; height: 100%; }
+        .course-card:hover { transform: translateY(-6px); box-shadow: 0 15px 35px rgba(15, 23, 42, 0.08); border-color: var(--secondary-200); }
+        .course-card .img-wrapper { position: relative; overflow: hidden; }
+        .course-card img { width: 100%; height: 160px; object-fit: cover; transition: transform 0.5s ease; }
+        .course-card:hover img { transform: scale(1.05); }
+        
+        /* Bestseller Ribbon */
+        .ribbon { position: absolute; top: 12px; right: 12px; background: var(--warning-color); color: #fff; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; z-index: 2; box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);}
+        
+        .course-card-body { padding: 1.25rem; flex-grow: 1; display: flex; flex-direction: column; }
+        .course-tag { display: inline-block; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: var(--secondary-600); background: var(--secondary-50); padding: 0.25rem 0.6rem; border-radius: 6px; margin-bottom: 0.75rem; align-self: flex-start; }
+        .course-card h5 { font-size: 1.1rem; margin-bottom: 0.4rem; line-height: 1.3; }
+        .course-card p { font-size: 0.8rem; margin-bottom: 0.8rem; line-height: 1.5; flex-grow: 1;}
+        .course-meta { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--primary-100); }
+        .instructor-flex { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem;}
+        .instructor-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--primary-200); display: flex; align-items: center; justify-content: center; color: var(--primary-600); font-size: 0.7rem; font-weight: bold; }
+
+        /* Interactive Categories */
+        .category-section { padding: 5rem 0; background-color: #ffffff; }
+        .category-card { background: var(--primary-50); border: 1px solid var(--primary-100); border-radius: 16px; padding: 1.5rem; transition: var(--transition); display: flex; align-items: center; gap: 1.25rem; cursor: pointer; position: relative; overflow: hidden; text-decoration: none; }
+        .category-card::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--secondary-500), var(--secondary-700)); opacity: 0; transition: var(--transition); z-index: 0; }
+        .category-card > * { position: relative; z-index: 1; transition: var(--transition); }
+        .category-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(13, 148, 136, 0.15); border-color: transparent; }
+        .category-card:hover::before { opacity: 1; }
+        .category-card:hover h5, .category-card:hover p { color: #ffffff !important; }
+        .category-icon { width: 50px; height: 50px; background: #ffffff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: var(--secondary-600); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .category-card h5 { font-size: 0.95rem; margin-bottom: 0.1rem; color: var(--primary-900); }
+        .category-card p { font-size: 0.75rem; margin-bottom: 0; color: var(--primary-600); }
+
+        /* Connected Process Steps */
+        .process-section { padding: 5rem 0; background: var(--primary-900); color: #fff; position: relative; overflow: hidden;}
+        .process-section h2 { color: #fff; font-size: 1.6rem;}
+        .process-section .text-muted { color: var(--primary-300) !important; font-size: 0.85rem;}
+        .process-card { text-align: center; position: relative; z-index: 2; padding: 1.5rem 0.5rem; }
+        .step-icon-wrap { width: 65px; height: 65px; background: var(--primary-800); border: 2px solid var(--primary-700); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: var(--secondary-400); margin: 0 auto 1.25rem; position: relative; transition: var(--transition); }
+        .process-card:hover .step-icon-wrap { background: var(--secondary-500); border-color: var(--secondary-400); color: #fff; transform: scale(1.1); box-shadow: 0 0 20px rgba(45, 212, 191, 0.3); }
+        .process-card h5 { font-size: 0.95rem; color: #fff;}
+        .process-card p { font-size: 0.75rem; margin-bottom: 0; color: var(--primary-300); }
+        
+        @media (min-width: 992px) {
+            .process-arrow { position: absolute; top: 32px; right: -40%; width: 80%; height: 2px; border-top: 2px dashed var(--primary-600); z-index: 1; pointer-events: none; }
+            .process-arrow::after { content: '▶'; position: absolute; right: -5px; top: -11px; color: var(--primary-600); font-size: 0.9rem; }
+        }
+
+        /* Call to Action */
+        .cta-section { padding: 5rem 0; background: #ffffff; }
+        .cta-box { background: url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop') center/cover; position: relative; border-radius: 24px; overflow: hidden; padding: 4rem 1.5rem; text-align: center; }
+        .cta-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(13, 148, 136, 0.85)); z-index: 1; }
+        .cta-content { position: relative; z-index: 2; color: #fff; max-width: 600px; margin: 0 auto; }
+        .cta-content h2 { color: #fff; font-size: 2rem; margin-bottom: 1rem; }
+        .cta-content p { font-size: 0.9rem; color: var(--primary-200); }
+    </style>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-bg-blob"></div>
+        <div class="container hero-content">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6 pe-lg-4">
+                    <span class="badge bg-primary bg-opacity-10 mb-3 px-3 py-2 rounded-pill fw-semibold border border-primary border-opacity-25" style="font-size: 0.75rem;">
+                        <i class="bi bi-stars me-1"></i> The #1 Learning Platform
+                    </span>
+                    <h1>Unlock Potential, Learn Without <span class="text-primary position-relative">Limits</span></h1>
+                    <p class="lead mt-3">Master new skills with expert-led courses, hands-on projects, and professional certificates designed to fast-track your tech career.</p>
+                    <div class="mt-4 d-flex flex-wrap gap-2">
+                        <a class="btn btn-primary" href="{% url 'course_catalog' %}">Explore Courses <i class="bi bi-compass"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 mt-5 mt-lg-0">
+                    <div class="hero-image-wrapper">
+                        <img src="{% static 'images/profile.png' %}" alt="Students learning online" onerror="this.src='https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop'">
+                        
+                        <div class="glass-badge">
+                            <div class="glass-icon"><i class="bi bi-check-lg"></i></div>
+                            <div>
+                                <h6 class="mb-0 fs-6">50K+</h6>
+                                <small class="text-muted fw-semibold" style="font-size: 0.7rem;">Active Students</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Courses Section -->
+    <section class="courses-section">
+        <div class="container">
+            <div class="text-center mb-5 section-heading">
+                <h2>Trending Courses</h2>
+                <p>Join thousands of learners in our highest-rated tech programs.</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="course-card">
+                        <div class="img-wrapper">
+                            <div class="ribbon">Bestseller</div>
+                            <img src="https://images.unsplash.com/photo-1526379095098-d400fd0bfce8?q=80&w=600&auto=format&fit=crop" alt="Python Course">
+                        </div>
+                        <div class="course-card-body">
+                            <span class="course-tag">Programming</span>
+                            <h5>Python Masterclass: Zero to Hero</h5>
+                            <p>Master Python programming by building real-world automation scripts and data analysis tools.</p>
+                            
+                            <div class="course-meta">
+                                <div class="instructor-flex">
+                                    <div class="instructor-avatar">JS</div>
+                                    <span class="text-dark fw-bold">John Smith</span>
+                                </div>
+                                <div class="text-warning fw-bold d-flex align-items-center gap-1" style="font-size: 0.8rem;">
+                                    <i class="bi bi-star-fill"></i> 4.8
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 px-3 pb-3 pt-0">
+                            <a href="{% url 'course_catalog' %}" class="btn btn-outline-primary w-100 py-2">View Courses</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="course-card">
+                        <div class="img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?q=80&w=600&auto=format&fit=crop" alt="Web Dev">
+                        </div>
+                        <div class="course-card-body">
+                            <span class="course-tag" style="color:#059669; background:#dcfce7;">Web Dev</span>
+                            <h5>Full Stack Web Bootcamp</h5>
+                            <p>Learn HTML, CSS, JavaScript, React, and Node.js to build dynamic full-stack applications.</p>
+                            
+                            <div class="course-meta">
+                                <div class="instructor-flex">
+                                    <div class="instructor-avatar" style="background:#fef08a;">DL</div>
+                                    <span class="text-dark fw-bold">David Lee</span>
+                                </div>
+                                <div class="text-warning fw-bold d-flex align-items-center gap-1" style="font-size: 0.8rem;">
+                                    <i class="bi bi-star-fill"></i> 4.9
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 px-3 pb-3 pt-0">
+                            <a href="{% url 'course_catalog' %}" class="btn btn-outline-primary w-100 py-2">View Courses</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-6">
+                    <div class="course-card">
+                        <div class="img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=600&auto=format&fit=crop" alt="UI UX Design">
+                        </div>
+                        <div class="course-card-body">
+                            <span class="course-tag" style="color:#d97706; background:#fef9c3;">Design</span>
+                            <h5>Advanced UI/UX Design</h5>
+                            <p>Master Figma and user-centric design principles to create stunning digital experiences.</p>
+                            
+                            <div class="course-meta">
+                                <div class="instructor-flex">
+                                    <div class="instructor-avatar" style="background:#e0e7ff;">SW</div>
+                                    <span class="text-dark fw-bold">Sarah Wilson</span>
+                                </div>
+                                <div class="text-warning fw-bold d-flex align-items-center gap-1" style="font-size: 0.8rem;">
+                                    <i class="bi bi-star-fill"></i> 4.7
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent border-0 px-3 pb-3 pt-0">
+                            <a href="{% url 'course_catalog' %}" class="btn btn-outline-primary w-100 py-2">View Courses</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="{% url 'course_catalog' %}" class="btn btn-primary px-4 py-2">Explore All Courses <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Categories -->
+    <section class="category-section">
+        <div class="container">
+            <div class="text-center mb-4 section-heading">
+                <h2>Top Categories</h2>
+                <p>Find the specialization that fits your career goals.</p>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-lg-4 col-md-6">
+                    <a href="{% url 'course_catalog' %}?category=Web Development" class="category-card">
+                        <div class="category-icon"><i class="bi bi-laptop"></i></div>
+                        <div>
+                            <h5>Web Development</h5>
+                            <p>45+ Courses</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <a href="{% url 'course_catalog' %}?category=Programming" class="category-card">
+                        <div class="category-icon"><i class="bi bi-filetype-py"></i></div>
+                        <div>
+                            <h5>Python & Scripting</h5>
+                            <p>30+ Courses</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <a href="{% url 'course_catalog' %}?category=Data Science" class="category-card">
+                        <div class="category-icon"><i class="bi bi-cpu"></i></div>
+                        <div>
+                            <h5>Artificial Intelligence</h5>
+                            <p>25+ Courses</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <a href="{% url 'course_catalog' %}?category=Data Science" class="category-card">
+                        <div class="category-icon"><i class="bi bi-bar-chart-line"></i></div>
+                        <div>
+                            <h5>Data Science</h5>
+                            <p>40+ Courses</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <a href="{% url 'course_catalog' %}?category=Design" class="category-card">
+                        <div class="category-icon"><i class="bi bi-palette"></i></div>
+                        <div>
+                            <h5>UI/UX Design</h5>
+                            <p>20+ Courses</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <a href="{% url 'course_catalog' %}?category=Business" class="category-card">
+                        <div class="category-icon"><i class="bi bi-briefcase"></i></div>
+                        <div>
+                            <h5>Business & Finance</h5>
+                            <p>15+ Courses</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Connected Process Section -->
+    <section class="process-section">
+        <div class="container">
+            <div class="text-center mb-5 section-heading">
+                <h2 class="text-white">How It Works</h2>
+                <p class="text-muted">Your journey from beginner to certified professional.</p>
+            </div>
+
+            <div class="row g-4 position-relative">
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-card bg-transparent border-0 shadow-none">
+                        <div class="process-arrow"></div>
+                        <div class="step-icon-wrap"><i class="bi bi-person-plus"></i></div>
+                        <h5>1. Create Account</h5>
+                        <p class="text-muted">Sign up instantly and build your personalized profile.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-card bg-transparent border-0 shadow-none">
+                        <div class="process-arrow"></div>
+                        <div class="step-icon-wrap"><i class="bi bi-search"></i></div>
+                        <h5>2. Choose Course</h5>
+                        <p class="text-muted">Browse our catalog and select a path that matches your goals.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-card bg-transparent border-0 shadow-none">
+                        <div class="process-arrow"></div>
+                        <div class="step-icon-wrap"><i class="bi bi-play-circle"></i></div>
+                        <h5>3. Start Learning</h5>
+                        <p class="text-muted">Watch high-quality lessons and submit hands-on assignments.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="process-card bg-transparent border-0 shadow-none">
+                        <div class="step-icon-wrap"><i class="bi bi-patch-check"></i></div>
+                        <h5>4. Get Certified</h5>
+                        <p class="text-muted">Pass your quizzes to earn industry-recognized certificates.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-box">
+                <div class="cta-overlay"></div>
+                <div class="cta-content">
+                    <h2>Ready to Start Your Journey?</h2>
+                    <p class="mb-4">Join thousands of students and expert instructors on EduVerse today. Transform your career with in-demand tech skills.</p>
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        <a href="{% url 'register' %}" class="btn btn-light px-4 text-primary shadow-lg">Get Started Free</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock content %}

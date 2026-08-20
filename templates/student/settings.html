@@ -1,0 +1,191 @@
+{% extends 'student/student_base.html' %} 
+{% load static %}
+
+{% block title %}Settings | EduVerse{% endblock %}
+
+{% block content %}
+    <style>
+        .form-check-input:checked {
+            background-color: var(--secondary-600);
+            border-color: var(--secondary-600);
+        }
+        
+        .danger-zone {
+            border: 1px solid #fecaca !important;
+            background-color: #fff5f5;
+        }
+        
+        /* Make Django's default password fields look like Bootstrap */
+        .form-control {
+            background-color: var(--primary-50) !important;
+            border: 1px solid var(--primary-200) !important;
+            padding: 0.7rem 1rem !important;
+            border-radius: 8px !important;
+            font-size: 0.85rem !important;
+            font-weight: 500 !important;
+            color: var(--primary-800) !important;
+        }
+        .form-control:focus {
+            background-color: #ffffff !important;
+            border-color: var(--secondary-300) !important;
+            box-shadow: 0 0 0 4px var(--secondary-50) !important;
+        }
+    </style>
+
+    <!-- Page Header -->
+    <div class="mb-4 mt-3 mt-lg-0">
+        <h1 class="fw-bolder text-dark mb-1 fs-4">Account Settings</h1>
+        <p class="text-secondary fw-medium mb-0" style="font-size: 0.85rem;">Manage your profile, password, notifications and preferences.</p>
+    </div>
+
+    <!-- Alert Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0 rounded-3" role="alert">
+                {% if message.tags == 'success' %}<i class="bi bi-check-circle-fill me-2 text-success fs-5 align-middle"></i>{% endif %}
+                {% if message.tags == 'error' %}<i class="bi bi-exclamation-triangle-fill me-2 text-danger fs-5 align-middle"></i>{% endif %}
+                <span class="fw-medium text-dark" style="font-size: 0.85rem;">{{ message }}</span>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Settings Content -->
+    <div class="row w-100 mx-0 g-4">
+        <div class="col-xl-9 col-xxl-8 px-0">
+                
+            <!-- Profile Information Snapshot -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="settings-title fw-bolder text-dark mb-0 fs-5">
+                            <i class="bi bi-person-vcard text-primary me-2"></i>Profile Information
+                        </h3>
+                        <a href="{% url 'profile' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-sm fw-semibold">Edit Profile</a>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold text-dark mb-1" style="font-size: 0.8rem;">Full Name</label>
+                            <input type="text" class="form-control text-muted" value="{{ request.user.first_name }} {{ request.user.last_name }}" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-dark mb-1" style="font-size: 0.8rem;">Email</label>
+                            <input type="email" class="form-control text-muted" value="{{ request.user.email }}" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-dark mb-1" style="font-size: 0.8rem;">Phone Number</label>
+                            <input type="tel" class="form-control text-muted" value="{{ request.user.profile.phone_number|default:'Not provided' }}" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Password Form -->
+            <div class="card settings-card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4 p-md-5">
+                    <h3 class="fw-bolder text-dark mb-4 fs-5">
+                        <i class="bi bi-shield-lock text-primary me-2"></i>Change Password
+                    </h3>
+                    
+                    <form method="POST" action="{% url 'settings' %}">
+                        {% csrf_token %}
+                        
+                        <div class="row g-4">
+                            {% for field in form %}
+                                <div class="col-12 {% if not forloop.first %}col-md-6{% endif %}">
+                                    <label class="form-label fw-semibold text-dark mb-1" style="font-size: 0.8rem;">{{ field.label }}</label>
+                                    
+                                    {{ field }}
+                                    
+                                    {% if field.help_text %}
+                                        <div class="form-text text-muted small mt-1 lh-sm" style="font-size: 0.7rem;">{{ field.help_text|safe }}</div>
+                                    {% endif %}
+                                    
+                                    {% if field.errors %}
+                                        <div class="text-danger mt-1 fw-bold" style="font-size: 0.75rem;">
+                                            {% for error in field.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top text-end">
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold rounded-pill shadow-sm">
+                                Update Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Notification Settings (UI Placeholders) -->
+            <div class="card settings-card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4 p-md-5">
+                    <h3 class="fw-bolder text-dark mb-4 fs-5">
+                        <i class="bi bi-bell text-primary me-2"></i>Notifications
+                    </h3>
+                    
+                    <div class="form-check form-switch mb-3 d-flex align-items-center">
+                        <input class="form-check-input fs-5 mt-0 me-3 shadow-none" type="checkbox" role="switch" id="emailNotif" checked>
+                        <label class="form-check-label fw-medium text-dark" for="emailNotif">Email Notifications</label>
+                    </div>
+                    <div class="form-check form-switch mb-3 d-flex align-items-center">
+                        <input class="form-check-input fs-5 mt-0 me-3 shadow-none" type="checkbox" role="switch" id="assignmentNotif" checked>
+                        <label class="form-check-label fw-medium text-dark" for="assignmentNotif">Assignment Reminders</label>
+                    </div>
+                    <div class="form-check form-switch d-flex align-items-center">
+                        <input class="form-check-input fs-5 mt-0 me-3 shadow-none" type="checkbox" role="switch" id="promoNotif">
+                        <label class="form-check-label fw-medium text-dark" for="promoNotif">Promotional Emails</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Actions -->
+            <div class="card settings-card danger-zone rounded-4 mb-5">
+               <div class="card-body p-4 p-md-5">
+                   <h3 class="fw-bolder text-danger mb-2 fs-5">
+                       <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>Account Actions
+                   </h3>
+                   <p class="text-danger opacity-75 fw-medium mb-4" style="font-size: 0.85rem;">Once you delete your account, there is no going back. Please be certain.</p>
+                   
+                   <!-- Trigger Button for Modal -->
+                   <button type="button" class="btn btn-outline-danger px-4 py-2 fw-semibold rounded-pill bg-white shadow-sm" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                       <i class="bi bi-trash me-2"></i>Delete Account
+                   </button>
+               </div>
+            </div>
+
+            <!-- Delete Account Confirmation Modal -->
+            <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content border-0 shadow rounded-4 p-2">
+                        <div class="modal-header border-0 pb-0">
+                            <h5 class="modal-title fw-bold text-danger" id="deleteAccountModalLabel">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>Delete Account
+                            </h5>
+                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body py-3">
+                            <p class="text-secondary fw-medium mb-0" style="font-size: 0.9rem;">
+                                Are you absolutely sure you want to delete your account? All your course enrollments, progress, and certificates will be permanently removed.
+                            </p>
+                        </div>
+                        <div class="modal-footer border-0 pt-0">
+                            <button type="button" class="btn btn-light rounded-pill px-4 fw-semibold" data-bs-dismiss="modal">Cancel</button>
+                            
+                            <form action="{% url 'delete_account' %}" method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger rounded-pill px-4 fw-semibold shadow-sm">Yes, Delete Account</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock content %}

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login | EduVerse{% endblock %}
+
+{% block content %}
+<main>
+    <section class="login-section py-5 mt-4 mb-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-5 col-md-7">
+                    
+                    <!-- Django Messages Block (For Invalid Passwords / Success Messages) -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Login Card -->
+                    <div class="card shadow-sm border-0 rounded-4">
+                        <div class="card-body p-4 p-md-5">
+                            <h2 class="text-center fw-bold text-dark mb-2">Welcome Back</h2>
+                            <p class="text-center text-muted mb-4">Login to continue your learning journey.</p>
+                    
+                            <!-- Django POST Form -->
+                            <form method="POST" action="{% url 'login' %}">
+                                {% csrf_token %}
+                                
+                                <!-- Catches the '?next=' parameter from the URL to redirect users back to where they came from -->
+                                <input type="hidden" name="next" value="{{ request.GET.next }}">
+                    
+                                <!-- Username Input -->
+                                 <div class="mb-3">
+                                    <label for="username" class="form-label fw-semibold small">Username</label>
+                                    <input type="text" class="form-control form-control-lg bg-light fs-6" id="username" name="username" placeholder="Enter your username" required>
+                                </div>
+
+                                <!-- Password Input -->
+                                 <div class="mb-4">
+                                     <label for="password" class="form-label fw-semibold small">Password</label>
+                                     <input type="password" class="form-control form-control-lg bg-light fs-6" id="password" name="password" placeholder="Enter your password" required>
+                                 </div>
+                                 
+                                <!-- Remember & Forgot Password -->
+                                 <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="remember" name="remember">
+                                        <label class="form-check-label text-muted small" for="remember">
+                                            Remember Me
+                                        </label>
+                                    </div>
+                                    <a href="#" class="text-decoration-none small fw-semibold text-primary">Forgot Password?</a>
+                                </div>
+                                
+                                <!-- Login Button -->
+                                 <div class="d-grid mt-2">
+                                    <button type="submit" class="btn btn-primary py-2 fw-bold fs-6 rounded-pill shadow-sm">
+                                        Login
+                                    </button>
+                                </div>
+
+                                <!--Register link-->
+                                <div class="text-center mt-4">
+                                   <p class="text-muted small mb-0">
+                                       Don't have an account?
+                                       <a href="{% url 'register' %}" class="fw-bold text-primary text-decoration-none">Register</a>
+                                   </p>
+                               </div>
+                            </form>
+
+                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock content %}

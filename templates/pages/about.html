@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About | EduVerse{% endblock %}
+
+{% block content %}
+    <!-- Page Specific Styling -->
+    <style>
+        .about-hero {
+            background: linear-gradient(135deg, var(--primary-900), var(--primary-800));
+            padding: 5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .about-hero::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, transparent 60%);
+            z-index: 1;
+        }
+        .about-hero .container { position: relative; z-index: 2; }
+        .about-hero h1 {
+            color: #ffffff;
+            font-size: 2.5rem;
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
+        }
+        .about-hero .lead {
+            color: var(--primary-200);
+            font-size: 1rem;
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* About Content Section */
+        .about-section {
+            padding: 5rem 0;
+            background-color: #ffffff;
+        }
+        .about-section img {
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--primary-100);
+            object-fit: cover;
+        }
+        .about-content h2 { font-size: 1.8rem; margin-bottom: 1.2rem; color: var(--primary-900); }
+        .about-content p { color: var(--primary-600); font-size: 0.9rem; margin-bottom: 1.2rem; }
+
+        /* Cards (Mission, Vision, Features) */
+        .mission-card .card-body, .vision-card .card-body, .feature-card .card-body {
+            background-color: #ffffff;
+            border-radius: var(--radius);
+            border: 1px solid var(--primary-100);
+            box-shadow: var(--shadow);
+            padding: 2.5rem 2rem;
+            height: 100%;
+            transition: var(--transition);
+            text-align: center;
+        }
+        .mission-card .card-body:hover, .vision-card .card-body:hover, .feature-card .card-body:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.1);
+            border-color: var(--primary-200);
+        }
+        
+        /* Icon wrappers for cards */
+        .card-body i {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background-color: var(--primary-50);
+            margin-bottom: 1.2rem;
+            font-size: 1.8rem !important; 
+        }
+        .mission-card i { color: var(--secondary-600) !important; background-color: var(--secondary-50); }
+        .vision-card i { color: var(--success-color) !important; background-color: #dcfce7; }
+        .feature-card:nth-child(1) i { color: var(--secondary-600) !important; background-color: var(--secondary-50); }
+        .feature-card:nth-child(2) i { color: var(--success-color) !important; background-color: #dcfce7; }
+        .feature-card:nth-child(3) i { color: var(--warning-color) !important; background-color: #fef9c3; }
+
+        .card-body h3, .card-body h4 { font-size: 1.15rem; margin-bottom: 0.8rem; }
+        .card-body p { font-size: 0.85rem; color: var(--primary-500); margin-bottom: 0; }
+
+        /* Statistics Section */
+        .stats {
+            background-color: var(--primary-900);
+            padding: 4rem 0;
+            border-top: 4px solid var(--secondary-600);
+        }
+        .stats-box { padding: 1.5rem 0; }
+        .stats-box h2 {
+            color: var(--secondary-400);
+            font-size: 2.2rem;
+            margin-bottom: 0.2rem;
+        }
+        .stats-box p {
+            color: var(--primary-300);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+    </style>
+
+    <!-- Hero Section -->
+    <section class="about-hero">
+       <div class="container text-center">
+         <h1>About EduVerse</h1>
+         <p class="lead">Empowering learners with quality education and practical skills.</p>
+      </div>
+    </section>
+    
+    <!-- About Platform -->
+    <section class="about-section">
+       <div class="container">
+         <div class="row align-items-center g-5">
+            <div class="col-md-6">
+              <img 
+                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop"
+                class="img-fluid rounded-4 shadow-sm"
+                alt="About EduVerse Learning Platform"
+                style="object-fit: cover; max-height: 400px; width: 100%;">
+           </div>
+           <div class="col-md-6 about-content">
+             <h2>Who We Are</h2>
+             <p>EduVerse is an online learning platform designed to help students
+             learn technology skills through structured courses, practical projects,
+             and expert guidance.</p>
+             <p>Our goal is to make high-quality education accessible for everyone
+             and help learners build successful careers.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mission Vision -->
+    <section class="py-5 bg-light">
+        <div class="container my-4"> 
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="mission-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-bullseye text-primary"></i>
+                            <h3 class="mt-2">Our Mission</h3>
+                            <p>To provide affordable, practical, and career-focused learning
+                            experiences for students worldwide.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="vision-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-eye text-success"></i>
+                            <h3 class="mt-2">Our Vision</h3>
+                            <p>To become a trusted learning platform where anyone can gain
+                            skills and achieve their professional goals.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+                
+    <!-- Why Choose Us -->     
+    <section class="py-5">  
+        <div class="container my-4">
+            <h2 class="text-center mb-5 pb-2" style="font-size: 1.8rem;">Why Choose EduVerse?</h2> 
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="feature-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-laptop text-primary"></i>
+                            <h4 class="mt-2">Practical Learning</h4>
+                            <p>Learn through projects and real-world examples.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-person-check text-success"></i>
+                            <h4 class="mt-2">Expert Instructors</h4>
+                            <p>Learn from experienced industry professionals.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card h-100">
+                        <div class="card-body">
+                            <i class="bi bi-award text-warning"></i>
+                            <h4 class="mt-2">Certificates</h4>
+                            <p>Earn certificates after completing courses.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+                
+    <!-- Statistics -->        
+    <section class="stats">
+        <div class="container">      
+            <div class="row text-center g-4">
+                <div class="col-md-3 col-6 stats-box">
+                    <h2>10K+</h2>
+                    <p>Students</p>
+                </div>
+                <div class="col-md-3 col-6 stats-box">
+                    <h2>200+</h2>
+                    <p>Courses</p>
+                </div>
+                <div class="col-md-3 col-6 stats-box">
+                    <h2>50+</h2>
+                    <p>Instructors</p>  
+                </div>
+                <div class="col-md-3 col-6 stats-box">
+                    <h2>95%</h2>
+                    <p>Success Rate</p>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock content %}

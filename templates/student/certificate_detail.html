@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ certificate.course.title }} Certificate | EduVerse</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts for Certificate Aesthetic -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        body {
+            background-color: #f1f5f9;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+        
+        .certificate-wrapper {
+            background: white;
+            width: 100%;
+            max-width: 950px;
+            padding: 2.5rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.1);
+        }
+
+        .certificate-inner {
+            border: 8px double #0d9488;
+            padding: 4rem 3rem;
+            text-align: center;
+            /* Subtle geometric background pattern for authenticity */
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-color: #ffffff;
+        }
+
+        .cert-header {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        .cert-subheader {
+            color: #0d9488;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 3.5rem;
+            font-size: 0.9rem;
+        }
+
+        .cert-student {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #0f172a;
+            border-bottom: 2px solid #cbd5e1;
+            display: inline-block;
+            padding: 0 2rem 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .cert-course {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #0d9488;
+            margin: 1.5rem 0 4rem;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+        }
+
+        .cert-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            text-align: left;
+        }
+
+        .signature-line {
+            border-top: 2px solid #475569;
+            width: 250px;
+            padding-top: 0.5rem;
+            font-weight: 600;
+            color: #0f172a;
+            font-size: 0.9rem;
+        }
+
+        .cert-id {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            text-align: left;
+            margin-top: 3rem;
+            line-height: 1.5;
+        }
+
+        /* Hides the print button and background colors when the user actually prints it */
+        @media print {
+            @page { margin: 0; size: landscape; }
+            body { background: white; padding: 0; margin: 0; display: block; }
+            .certificate-wrapper { box-shadow: none; border: none; max-width: 100%; padding: 1rem; }
+            .certificate-inner { background-image: none !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Actions (Hidden during print) -->
+    <div class="mb-4 no-print d-flex gap-3">
+        <!-- Make sure you have a 'student_certificates' URL path in your urls.py for this link! -->
+        <a href="{% url 'student_dashboard' %}" class="btn btn-light border rounded-pill shadow-sm fw-semibold">
+            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+        </a>
+        <button onclick="window.print()" class="btn btn-primary rounded-pill fw-bold shadow-sm" style="background-color: #0d9488; border: none;">
+            <i class="bi bi-printer-fill me-1"></i> Save as PDF
+        </button>
+    </div>
+
+    <!-- The Certificate -->
+    <div class="certificate-wrapper">
+        <div class="certificate-inner">
+            
+            <i class="bi bi-award-fill mb-2" style="font-size: 4rem; color: #0d9488;"></i>
+            
+            <h1 class="cert-header">Certificate of Completion</h1>
+            <p class="cert-subheader">EduVerse Learning Platform</p>
+            
+            <p class="text-secondary fw-medium mb-2" style="font-size: 0.9rem;">This is to proudly certify that</p>
+            <div class="cert-student">
+                {{ certificate.student.first_name|default:certificate.student.username }} {{ certificate.student.last_name }}
+            </div>
+            
+            <p class="text-secondary fw-medium mb-0" style="font-size: 0.9rem;">has successfully completed all coursework, lessons, and requirements for</p>
+            <div class="cert-course">{{ certificate.course.title }}</div>
+            
+            <div class="cert-footer">
+                <div>
+                    <!-- Could optionally pull the course.instructor.first_name here! -->
+                    <div class="signature-line text-center">EduVerse Lead Instructor</div>
+                </div>
+                <div>
+                    <div class="signature-line text-center">{{ certificate.issued_at|date:"F d, Y" }}</div>
+                </div>
+            </div>
+
+            <div class="cert-id">
+                <strong>Certificate ID:</strong> {{ certificate.certificate_id }}<br>
+                <!-- Dynamically generates the verify URL based on the server it is running on -->
+                <strong>Verify at:</strong> {{ request.scheme }}://{{ request.get_host }}{% url 'view_certificate' certificate.certificate_id %}
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>

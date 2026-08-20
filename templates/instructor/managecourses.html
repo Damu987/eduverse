@@ -1,0 +1,216 @@
+{% extends "instructor/instructor_base.html" %}
+{% load static %}
+
+{% block title %}Manage Courses | EduVerse{% endblock %}
+
+{% block content %}
+    <style>
+        .course-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid var(--primary-100) !important;
+        }
+        .course-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08) !important;
+        }
+        .card-footer {
+            background-color: transparent !important;
+            border-top: 1px solid var(--primary-100) !important;
+        }
+    </style>
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 mt-2 mt-lg-0">
+        <div>
+            <h1 class="fw-bolder fs-4 mb-1 text-dark">Manage Courses</h1>
+            <p class="text-secondary fw-medium mb-0" style="font-size: 0.85rem;">Create, manage and monitor your courses.</p>
+        </div>
+        
+        <a href="{% url 'create_course' %}" class="btn btn-primary rounded-pill fw-semibold shadow-sm">
+            <i class="bi bi-plus-circle me-1"></i> Create Course
+        </a>
+    </div>
+
+    <!-- Alert Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0 rounded-3" role="alert">
+                {% if message.tags == 'success' %}<i class="bi bi-check-circle-fill me-2 text-success fs-5 align-middle"></i>{% endif %}
+                <span class="fw-medium text-dark" style="font-size: 0.85rem;">{{ message }}</span>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Statistics (Populated from views.py context) -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-secondary fw-bold mb-1" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Total Courses</p>
+                            <h3 class="fw-bolder mb-0 fs-3 text-dark">{{ total_courses }}</h3>
+                        </div>
+                        <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="bi bi-book fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-secondary fw-bold mb-1" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Published</p>
+                            <h3 class="fw-bolder mb-0 fs-3 text-dark">{{ published_courses }}</h3>
+                        </div>
+                        <div class="bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="bi bi-check-circle fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 rounded-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-secondary fw-bold mb-1" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Drafts</p>
+                            <h3 class="fw-bolder mb-0 fs-3 text-dark">{{ draft_courses }}</h3>
+                        </div>
+                        <div class="bg-warning-subtle text-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                            <i class="bi bi-file-earmark-text fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course List Container -->
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+                <h4 class="mb-0 fw-bolder fs-5 text-dark">Your Courses</h4>
+                <select id="courseFilter" class="form-select shadow-none" style="width: 180px; font-size: 0.85srem;">
+                    <option value="all">All Courses</option>
+                    <option value="published">Published</option>
+                    <option value="draft">Drafts</option>
+                </select>
+            </div>
+
+            <!-- Course Loop -->
+            <div id="courseList" class="row g-4">
+                {% for course in courses %}
+                
+                <div class="col-md-6 col-lg-4 course-item" data-status="{% if course.published %}published{% else %}draft{% endif %}">
+                    <div class="card course-card h-100 shadow-sm border-0 rounded-4 overflow-hidden bg-white">
+                        
+                        <!-- Thumbnail -->
+                        {% if course.image %}
+                            <img src="{{ course.image.url }}" class="card-img-top" alt="{{ course.title }}" style="height: 160px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center border-bottom" style="height: 160px;">
+                                <i class="bi bi-image fs-1 text-muted opacity-50"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="card-body p-4">
+                            <!-- Status Badge -->
+                            {% if course.published %}
+                                <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle rounded-pill px-2 py-1 fw-semibold mb-2">Published</span>
+                            {% else %}
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-1 fw-semibold mb-2">Draft</span>
+                            {% endif %}
+                            
+                            <h5 class="card-title fw-bolder text-dark fs-6 mb-2">{{ course.title }}</h5>
+                            <p class="text-secondary small fw-medium mb-1"><i class="bi bi-folder2-open me-1 text-primary"></i> {{ course.get_category_display }}</p>
+                            <p class="text-secondary small fw-medium mb-0"><i class="bi bi-clock me-1 text-warning"></i> {{ course.duration }} <span class="mx-1">•</span> ₹{{ course.price }}</p>
+                        </div>
+                        
+                        <div class="card-footer px-4 py-3 d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                            <a href="{% url 'manage_assignments' course.id %}" class="btn btn-outline-warning btn-sm fw-semibold rounded-pill px-3" title="Assignments">
+                                <i class="bi bi-file-earmark-text"></i>
+                            </a>
+                            <a href="{% url 'manage_lessons' course.id %}" class="btn btn-outline-success btn-sm fw-semibold rounded-pill px-3" title="Lessons">
+                                <i class="bi bi-collection-play"></i>
+                            </a>
+                            <a href="{% url 'manage_quizzes' course.id %}" class="btn btn-outline-info btn-sm fw-semibold rounded-pill px-3" title="Quizzes">
+                                <i class="bi bi-patch-question"></i>
+                            </a>
+                            <a href="{% url 'edit_course' course.id %}" class="btn btn-outline-primary btn-sm fw-semibold rounded-pill px-3">
+                                <i class="bi bi-pencil me-1"></i> Edit
+                            </a>
+                            
+                            <form action="{% url 'delete_course' course.id %}" method="POST" class="d-inline m-0" onsubmit="return confirm('Are you sure you want to delete this course? This cannot be undone.');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm fw-semibold rounded-pill px-3">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                {% empty %}
+                <div class="col-12 text-center py-5">
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="bi bi-book fs-1 text-muted opacity-50"></i>
+                    </div>
+                    <h5 class="fw-bolder text-dark fs-5">No courses found</h5>
+                    <p class="text-secondary fw-medium small mb-4">Create your first course to get started.</p>
+                    <a href="{% url 'create_course' %}" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm">Create Course</a>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- JS Empty State for Filtering -->
+            <div id="emptyState" class="text-center py-5 d-none">
+                <i class="bi bi-search fs-1 text-muted opacity-50"></i>
+                <h5 class="fw-bolder text-dark fs-5 mt-3">No matching courses</h5>
+                <p class="text-secondary fw-medium small">Try changing your filter settings.</p>
+            </div>
+
+        </div>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+    // Filtering logic for the dropdown
+    document.addEventListener("DOMContentLoaded", function() {
+        const filterSelect = document.getElementById('courseFilter');
+        const courseItems = document.querySelectorAll('.course-item');
+        const emptyState = document.getElementById('emptyState');
+
+        if(filterSelect) {
+            filterSelect.addEventListener('change', function() {
+                const filterValue = this.value;
+                let visibleCount = 0;
+
+                courseItems.forEach(item => {
+                    const status = item.getAttribute('data-status');
+                    if (filterValue === 'all' || status === filterValue) {
+                        item.classList.remove('d-none');
+                        visibleCount++;
+                    } else {
+                        item.classList.add('d-none');
+                    }
+                });
+
+                if (visibleCount === 0) {
+                    emptyState.classList.remove('d-none');
+                } else {
+                    emptyState.classList.add('d-none');
+                }
+            });
+        }
+    });
+</script>
+{% endblock extra_js %}
