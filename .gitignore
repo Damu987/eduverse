@@ -10,3 +10,14 @@ __pycache__/
 db.sqlite3
 
 staticfiles/
+
+eduverse_users.json
+eduverse_data.json
+eduverse_users_to_load.json
+eduverse_profiles.json
+eduverse_courses.json
+eduverse_quiz.json
+eduverse_questions.json
+eduverse_choices.json
+eduverse_quizsubmission.json
+eduverse_notifications.json
